@@ -1,4 +1,4 @@
-//Microsoft Visual C++ generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -16,48 +16,12 @@
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
-#ifdef APSTUDIO_INVOKED
-
 /////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
+// English (United States) resources
 
-1 TEXTINCLUDE
-BEGIN
-    "resource.h\0"
-END
-
-2 TEXTINCLUDE
-BEGIN
-    "#ifndef APSTUDIO_INVOKED\r\n"
-    "#include ""targetver.h""\r\n"
-    "#endif\r\n"
-    "#include ""afxres.h""\r\n"
-    "#include ""verrsrc.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE
-BEGIN
-    "#define _AFX_NO_OLE_RESOURCES\r\n"
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
-    "\r\n"
-    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
-    "LANGUAGE 9, 1\r\n"
-    "#include ""res\\BlogToBook.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
-    "#include ""afxres.rc""      // Standard components\r\n"
-    "#include ""afxprint.rc""    // printing/print preview resources\r\n"
-    "#if !defined(_AFXDLL)\r\n"
-    "#include ""afxribbon.rc""        // MFC ribbon and control bar resources\r\n"
-    "#endif\r\n"
-    "#endif\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -66,12 +30,10 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\BlogToBook.ico"
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-LANGUAGE 9, 1
-IDR_MAINFRAME           ICON         "res\\BlogToBook.ico"
-IDR_BlogToBookTYPE         ICON         "res\\BlogToBookDoc.ico"
-#endif
+IDR_BlogToBookTYPE      ICON                    "res\\BlogToBookDoc.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -79,20 +41,35 @@ IDR_BlogToBookTYPE         ICON         "res\\BlogToBookDoc.ico"
 //
 
 IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
 IDR_MAINFRAME_256       BITMAP                  "res\\Toolbar256.bmp"
+
 IDB_MAIN                BITMAP                  "res\\main.bmp"
+
 IDB_FILELARGE           BITMAP                  "res\\filelarge.bmp"
+
 IDB_FILESMALL           BITMAP                  "res\\filesmall.bmp"
+
 IDB_WRITELARGE          BITMAP                  "res\\writelarge.bmp"
+
 IDB_WRITESMALL          BITMAP                  "res\\writesmall.bmp"
+
 IDB_BUTTONS             BITMAP                  "res\\buttons.bmp"
+
 IDB_NAVIGATION_LARGE    BITMAP                  "res\\nav_large.bmp"
+
 IDB_NAVIGATION_LARGE_HC BITMAP                  "res\\nav_large_hc.bmp"
+
 IDB_PAGES               BITMAP                  "res\\pages.bmp"
+
 IDB_PAGES_HC            BITMAP                  "res\\pages_hc.bmp"
+
 IDB_PAGES_SMALL         BITMAP                  "res\\pages_small.bmp"
+
 IDB_PAGES_SMALL_HC      BITMAP                  "res\\pages_small_hc.bmp"
+
 IDB_INFO                BITMAP                  "res\\info.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -127,8 +104,6 @@ BEGIN
     BUTTON      ID_APP_ABOUT
 END
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-LANGUAGE 9, 1
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -148,7 +123,7 @@ BEGIN
         MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
         MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP
         MENUITEM SEPARATOR
-        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1,GRAYED
+        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
     END
@@ -166,36 +141,34 @@ BEGIN
         MENUITEM "&Caption Bar",                ID_VIEW_CAPTION_BAR
         POPUP "&Application Look"
         BEGIN
-            MENUITEM "Windows &2000",           ID_VIEW_APPLOOK_WIN_2000
-            MENUITEM "Office &XP",              ID_VIEW_APPLOOK_OFF_XP
-            MENUITEM "&Windows XP",             ID_VIEW_APPLOOK_WIN_XP
-            MENUITEM "Office 200&3",            ID_VIEW_APPLOOK_OFF_2003
-            MENUITEM "Visual Studio 200&5",     ID_VIEW_APPLOOK_VS_2005
-            MENUITEM "Visual Studio 200&8",     ID_VIEW_APPLOOK_VS_2008
+            MENUITEM "Windows &2000",               ID_VIEW_APPLOOK_WIN_2000
+            MENUITEM "Office &XP",                  ID_VIEW_APPLOOK_OFF_XP
+            MENUITEM "&Windows XP",                 ID_VIEW_APPLOOK_WIN_XP
+            MENUITEM "Office 200&3",                ID_VIEW_APPLOOK_OFF_2003
+            MENUITEM "Visual Studio 200&5",         ID_VIEW_APPLOOK_VS_2005
+            MENUITEM "Visual Studio 200&8",         ID_VIEW_APPLOOK_VS_2008
             POPUP "Office 200&7"
             BEGIN
-                MENUITEM "&Blue Style",         ID_VIEW_APPLOOK_OFF_2007_BLUE
-                MENUITEM "B&lack Style",        ID_VIEW_APPLOOK_OFF_2007_BLACK
-                MENUITEM "&Silver Style",       ID_VIEW_APPLOOK_OFF_2007_SILVER
-                MENUITEM "&Aqua Style",         ID_VIEW_APPLOOK_OFF_2007_AQUA
+                MENUITEM "&Blue Style",                 ID_VIEW_APPLOOK_OFF_2007_BLUE
+                MENUITEM "B&lack Style",                ID_VIEW_APPLOOK_OFF_2007_BLACK
+                MENUITEM "&Silver Style",               ID_VIEW_APPLOOK_OFF_2007_SILVER
+                MENUITEM "&Aqua Style",                 ID_VIEW_APPLOOK_OFF_2007_AQUA
             END
         END
     END
     POPUP "&Help"
     BEGIN
-        MENUITEM "&About BlogToBook...",          ID_APP_ABOUT
+        MENUITEM "&About BlogToBook...",        ID_APP_ABOUT
     END
 END
 
-
-
 IDR_POPUP_EDIT MENU
 BEGIN
-	POPUP "Edit"
-	BEGIN
-		MENUITEM "Cu&t\tCtrl+X",            ID_EDIT_CUT
-		MENUITEM "&Copy\tCtrl+C",           ID_EDIT_COPY
-		MENUITEM "&Paste\tCtrl+V",          ID_EDIT_PASTE
+    POPUP "Edit"
+    BEGIN
+        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
+        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
     END
 END
 
@@ -204,19 +177,20 @@ BEGIN
     MENUITEM "&New Window",                 ID_WINDOW_NEW
 END
 
-IDR_HELP_MENU MENU 
+IDR_HELP_MENU MENU
 BEGIN
-    MENUITEM "&About BlogToBook...",          ID_APP_ABOUT
+    MENUITEM "&About BlogToBook...",        ID_APP_ABOUT
 END
 
 IDR_THEME_MENU MENU
 BEGIN
-    MENUITEM "Office 2007 (&Blue Style)",       ID_VIEW_APPLOOK_OFF_2007_BLUE
-    MENUITEM "Office 2007 (B&lack Style)",      ID_VIEW_APPLOOK_OFF_2007_BLACK
-    MENUITEM "Office 2007 (&Silver Style)",     ID_VIEW_APPLOOK_OFF_2007_SILVER
-    MENUITEM "Office 2007 (&Aqua Style)",       ID_VIEW_APPLOOK_OFF_2007_AQUA
-    MENUITEM "Win&dows 7",                      ID_VIEW_APPLOOK_WINDOWS_7
+    MENUITEM "Office 2007 (&Blue Style)",   ID_VIEW_APPLOOK_OFF_2007_BLUE
+    MENUITEM "Office 2007 (B&lack Style)",  ID_VIEW_APPLOOK_OFF_2007_BLACK
+    MENUITEM "Office 2007 (&Silver Style)", ID_VIEW_APPLOOK_OFF_2007_SILVER
+    MENUITEM "Office 2007 (&Aqua Style)",   ID_VIEW_APPLOOK_OFF_2007_AQUA
+    MENUITEM "Win&dows 7",                  ID_VIEW_APPLOOK_WINDOWS_7
 END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -225,23 +199,21 @@ END
 
 IDR_MAINFRAME ACCELERATORS
 BEGIN
-    "N",            ID_FILE_NEW,            VIRTKEY,CONTROL
-    "O",            ID_FILE_OPEN,           VIRTKEY,CONTROL
-    "S",            ID_FILE_SAVE,           VIRTKEY,CONTROL
-    "P",            ID_FILE_PRINT,          VIRTKEY,CONTROL
-	"Z",            ID_EDIT_UNDO,           VIRTKEY,CONTROL
-	"X",            ID_EDIT_CUT,            VIRTKEY,CONTROL
-	"C",            ID_EDIT_COPY,           VIRTKEY,CONTROL
-	"V",            ID_EDIT_PASTE,          VIRTKEY,CONTROL
-    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY,ALT
-    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY,SHIFT
-    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY,CONTROL
-    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY,SHIFT
-    VK_F6,          ID_NEXT_PANE,           VIRTKEY
-    VK_F6,          ID_PREV_PANE,           VIRTKEY,SHIFT
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY 
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
 END
-
-
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -249,17 +221,17 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
+IDD_ABOUTBOX DIALOGEX 0, 0, 173, 122
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About BlogToBook"
-FONT 8, "MS Shell Dlg"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
     LTEXT           "BlogToBook, Version 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2018",IDC_STATIC,42,26,114,8
-    DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
+    LTEXT           "By Oormi Creations https://oormi.in Copyright (C) 2018",IDC_STATIC,33,40,80,31
+    DEFPUSHBUTTON   "OK",IDOK,116,101,50,14,WS_GROUP
+    LTEXT           "EPUB template by Jason Hibbs http://jasonhibbs.co.uk",IDC_STATIC,35,78,76,37
 END
-
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -267,18 +239,18 @@ END
 // Version
 //
 
-VS_VERSION_INFO     VERSIONINFO
-  FILEVERSION       1,0,0,1
-  PRODUCTVERSION    1,0,0,1
- FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
- FILEFLAGS VS_FF_DEBUG
+ FILEFLAGS 0x1L
 #else
  FILEFLAGS 0x0L
 #endif
- FILEOS VOS_NT_WINDOWS32
- FILETYPE VFT_APP
- FILESUBTYPE VFT2_UNKNOWN
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
@@ -286,19 +258,20 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "TODO: <Company name>"
             VALUE "FileDescription", "BlogToBook"
-            VALUE "FileVersion",     "1.0.0.1"
-            VALUE "InternalName",    "BlogToBook.exe"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "BlogToBook.exe"
             VALUE "LegalCopyright", "TODO: (c) <Company name>.  All rights reserved."
-            VALUE "OriginalFilename","BlogToBook.exe"
+            VALUE "OriginalFilename", "BlogToBook.exe"
             VALUE "ProductName", "TODO: <Product name>"
-            VALUE "ProductVersion",  "1.0.0.1"
+            VALUE "ProductVersion", "1.0.0.1"
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x0409, 1200
+        VALUE "Translation", 0x409, 1200
     END
 END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -311,12 +284,32 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 163
+        RIGHTMARGIN, 166
         TOPMARGIN, 7
-        BOTTOMMARGIN, 55
+        BOTTOMMARGIN, 115
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Ribbon
+//
+
+IDR_RIBBON              RT_RIBBON_XML           "res\\ribbon.mfcribbon-ms"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -325,19 +318,20 @@ END
 
 STRINGTABLE
 BEGIN
-    IDP_OLE_INIT_FAILED       "OLE initialization failed.  Make sure that the OLE libraries are the correct version."
+    IDP_OLE_INIT_FAILED     "OLE initialization failed.  Make sure that the OLE libraries are the correct version."
 END
+
 STRINGTABLE
 BEGIN
-// Non-mac-targeting apps remove the two extra substrings
-    IDR_MAINFRAME           "BlogToBook\n\nBlogToBook\n\n\nBlogToBook.Document\nBlogToBook.Document"
-
+    IDR_MAINFRAME           "BlogToBook\n\nBlogToBook\nBlogToBook Files(*.b2b)\n.b2b\nBlogToBook.Document\nBlogToBook.Document"
 END
+
 STRINGTABLE
 BEGIN
     AFX_IDS_APP_TITLE       "BlogToBook"
     AFX_IDS_IDLEMESSAGE     "Ready"
 END
+
 STRINGTABLE
 BEGIN
     ID_INDICATOR_EXT        "EXT"
@@ -347,6 +341,7 @@ BEGIN
     ID_INDICATOR_OVR        "OVR"
     ID_INDICATOR_REC        "REC"
 END
+
 STRINGTABLE
 BEGIN
     ID_FILE_NEW             "Create a new document\nNew"
@@ -356,11 +351,19 @@ BEGIN
     ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
     ID_FILE_PAGE_SETUP      "Change the printing options\nPage Setup"
     ID_FILE_PRINT_SETUP     "Change the printer and printing options\nPrint Setup"
-    ID_FILE_PRINT_DIRECT    "Print the active document using current options\nQuick Print"
     ID_FILE_PRINT           "Print the active document\nPrint"
+    ID_FILE_PRINT_DIRECT    "Print the active document using current options\nQuick Print"
     ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
+END
+
+STRINGTABLE
+BEGIN
     ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
     ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+END
+
+STRINGTABLE
+BEGIN
     ID_FILE_MRU_FILE1       "Open this document"
     ID_FILE_MRU_FILE2       "Open this document"
     ID_FILE_MRU_FILE3       "Open this document"
@@ -377,9 +380,21 @@ BEGIN
     ID_FILE_MRU_FILE14      "Open this document"
     ID_FILE_MRU_FILE15      "Open this document"
     ID_FILE_MRU_FILE16      "Open this document"
+END
+
+STRINGTABLE
+BEGIN
     ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
     ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
+END
+
+STRINGTABLE
+BEGIN
     ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
+END
+
+STRINGTABLE
+BEGIN
     ID_EDIT_CLEAR           "Erase the selection\nErase"
     ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
     ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
@@ -391,8 +406,16 @@ BEGIN
     ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
     ID_EDIT_UNDO            "Undo the last action\nUndo"
     ID_EDIT_REDO            "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE
+BEGIN
     ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
     ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle Status Bar"
+END
+
+STRINGTABLE
+BEGIN
     ID_VIEW_CAPTION_BAR     "Show or hide the caption bar\nToggle Caption Bar"
 END
 
@@ -405,55 +428,250 @@ BEGIN
     AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
     AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
     AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
-    AFX_IDS_SCRESTORE       "Restore the window to normal size"
-    AFX_IDS_SCTASKLIST      "Activate Task List"
-    AFX_IDS_PREVIEW_CLOSE   "Close print preview mode\nCancel Preview"
 END
 
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activate Task List"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_PREVIEW_CLOSE   "Close print preview mode\nCancel Preview"
+END
 
 STRINGTABLE
 BEGIN
     IDS_STATUS_PANE1        "Pane 1"
     IDS_STATUS_PANE2        "Pane 2"
+END
+
+STRINGTABLE
+BEGIN
     IDS_MYCALENDARS         "My Calendars"
     IDS_CALENDAR            "Calendar"
     IDS_SHORTCUTS           "Shortcuts"
     IDS_FOLDERS             "Folders"
+END
+
+STRINGTABLE
+BEGIN
     IDS_OUTLOOKBAR          "Outlook Bar"
+END
+
+STRINGTABLE
+BEGIN
     IDS_CAPTION_BUTTON      "Options..."
     IDS_CAPTION_BUTTON_TIP  "Click here to see more options"
-    IDS_CAPTION_TEXT        "This is a caption bar where a message can be presented to the user."
+    IDS_CAPTION_TEXT        "Blog to Book is ready. Start by fetching your blog articles or open an existing project."
     IDS_CAPTION_IMAGE_TIP   "Important"
     IDS_CAPTION_IMAGE_TEXT  "Here is an informational message for the user."
+END
+
+STRINGTABLE
+BEGIN
     IDS_EDIT_MENU           "Edit"
 END
 
+STRINGTABLE
+BEGIN
+    ID_BUTTON_FETCH         "Download the contents of your blog.\nFetch"
+    ID_BUTTON_RENDER        "See a preview of your EBook. This will be approximate. Always check the output in a good EBook reader.\nRender"
+    ID_COMBO_FONT_TITLE     "Font for title. Note that EBook readers or apps can override with their own fonts and font sizes.\nTitle Font"
+    ID_COMBO_FONT_BODY      "Font for body. Note that EBook readers or apps can override with their own fonts and font sizes.\nBody Font"
+    ID_SLIDER_PAGESCALE     "Zoom Page"
+    ID_BUTTON_SAVEEPUB      "Saves the blog articles as an EPUB 3.0 file for reading via any EBook reader or for publishing.\nSave as EPUB"
+    ID_EDIT_FETCHFROM       "Fetch articles starting from this month and year.\nFrom Date"
+    ID_EDIT_FETCHTO         "Fetch articles up to this month and year.\nTo Date"
+END
+
+STRINGTABLE
+BEGIN
+    ID_EDIT_ADDR            "The url to your blog at Blogspot.\nAddress or Link"
+    ID_EDIT_BNAME           "Also the Book Title. Aa-Zz, 0-9, No special characters\nBlog Name"
+    ID_EDIT_AUTH            "Blog owners name appears in the book as author.\nAuthor"
+    ID_BUTTON_DEMO          "Create a demo EBook from a demo blog.\nDemo EBook"
+    ID_BUTTON_LIST          "View the list of article. Include or Exclude the articles from book.\nArticle List"
+    ID_BUTTON_SHOWFOLDER    "Opens Project Folder where your EBook files are.\nOpen Project Folder"
+    ID_BUTTON_SHOWCASE      "Opens a web page where you can upload your EBook. If your blog is public, your EBook can be uploaded here.\nShowcase"
+    ID_BUTTON_VALID         "Opens a web page where you can check your EBook for errors. Highly recommended to validate your EBook before your publish it.\nOnline Validator"
+    ID_EDIT_BOOK_TITLE      "Title of your book, same as Blog name in previous tab.\nBook Title"
+    ID_EDIT_BOOK_DESC       "A short description of your book. This is usually displayed by the EBook stores.\nDescription"
+    ID_EDIT_BOOK_PUB        "If the author is publishing it, just type author's name.\nPublisher"
+    ID_EDIT_BOOK_ISBN       "13 digit number. It is not mandatory. You can get one free from Smashwords.com\nISBN"
+    ID_BUTTON_LIC           "Opens a dialog where you can edit the Copyright notice or license or add links to your blog or other sites, ISBN etc. You can use html formatting.\nEdit Copyright"
+    ID_BUTTON_COVER         "Change the book cover. Ensure that its width or height is greater than 1500 pixels and aspect ratio matches the page aspect ratio.\\Cover Image"
+END
+
+STRINGTABLE
+BEGIN
+    ID_BUTTON_PREFACE       "Opens a dialog where you can edit the Preface. You can use html formatting.\nEdit Preface"
+    ID_BUTTON_ENDPAGE       "Opens a dialog where you can edit the End Page. Add links to your other works. You can use html formatting.\nEdit End Page"
+    ID_CHECK_REF            "Adds a reference to Blog to Book in the end of the End Page. This is useful for other bloggers and readers.\nBlog to Book Reference"
+    ID_BUTTON_DED           "Opens a dialog where you can edit the dedication page of your EBook. You can use html formatting.\nEdit Dedication"
+    ID_BUTTON_EDLIST        "Edit the list of articles. Reorder them.\nEdit List"
+    ID_BUTTON_CALIBRE       "Free and open sourced EBook Reader. Convert your Ebook to multiple formats or edit it.\nCalibre"
+    ID_BUTTON_HELP          "Opens online help\nHelp"
+    ID_BUTTON_UPDATE        "Check if an updated version is available\nCheck for Updates"
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (India) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENN)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_INDIA
+#pragma code_page(1252)
+
 /////////////////////////////////////////////////////////////////////////////
 //
-// Ribbon
+// Dialog
 //
 
-IDR_RIBBON             RT_RIBBON_XML           "res\\ribbon.mfcribbon-ms"
+IDD_DIALOG_ATTRIB DIALOGEX 0, 0, 279, 223
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "EBook Attributes"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "Include",IDC_CHECK_ATT_INCULDE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,15,39,10
+    EDITTEXT        IDC_EDIT_ATT_HEAD,7,44,265,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_ATT_CONTENT,7,84,265,110,ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL
+    PUSHBUTTON      "Save",IDSAVE,222,202,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,7,202,50,14
+    DEFPUSHBUTTON   "OK",IDOK,167,202,50,14,NOT WS_VISIBLE
+    LTEXT           "Header",IDC_STATIC,7,34,24,8
+    LTEXT           "Content",IDC_STATIC,7,74,27,8
+END
 
-#endif
+IDD_DIALOG_NEW_PROJECT DIALOGEX 0, 0, 375, 119
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+EXSTYLE WS_EX_TOOLWINDOW | WS_EX_WINDOWEDGE
+CAPTION "Create a new project..."
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Create New Project...",IDOK,260,96,102,14
+    PUSHBUTTON      "Cancel",IDCANCEL,12,96,102,14
+    EDITTEXT        IDC_EDIT_PROJNAME,12,24,350,14,ES_AUTOHSCROLL
+    LTEXT           "Project Name",IDC_STATIC,12,12,44,8
+    EDITTEXT        IDC_EDIT_PROJFOLDER,12,66,296,14,ES_AUTOHSCROLL
+    LTEXT           "Project Folder",IDC_STATIC,12,54,46,8
+    PUSHBUTTON      "Browse...",IDC_BUTTON_PROJBROWSE,312,66,50,14
+    PUSHBUTTON      "Open Existing Project...",IDC_BUTTON_PROJOPEN,136,96,102,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_ATTRIB, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 272
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 216
+    END
+
+    IDD_DIALOG_NEW_PROJECT, DIALOG
+    BEGIN
+        LEFTMARGIN, 12
+        RIGHTMARGIN, 362
+        TOPMARGIN, 12
+        BOTTOMMARGIN, 110
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG_ATTRIB AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_NEW_PROJECT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\r\n"
+    "#include ""verrsrc.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#include ""res\\BlogToBook.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""      // Standard components\r\n"
+    "#include ""afxprint.rc""    // printing/print preview resources\r\n"
+    "#if !defined(_AFXDLL)\r\n"
+    "#include ""afxribbon.rc""        // MFC ribbon and control bar resources\r\n"
+    "#endif\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (India) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
 
 #ifndef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-
 #define _AFX_NO_OLE_RESOURCES
 #define _AFX_NO_TRACKER_RESOURCES
 #define _AFX_NO_PROPERTY_RESOURCES
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE 9, 1
-#include "res\\BlogToBook.rc2"  // non-Microsoft Visual C++ edited resources
+#include "res\BlogToBook.rc2"  // non-Microsoft Visual C++ edited resources
 #include "afxres.rc"      // Standard components
-#include "afxprint.rc"  // printing/print preview resources
+#include "afxprint.rc"    // printing/print preview resources
 #if !defined(_AFXDLL)
 #include "afxribbon.rc"        // MFC ribbon and control bar resources
 #endif
 #endif
+
+/////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
+

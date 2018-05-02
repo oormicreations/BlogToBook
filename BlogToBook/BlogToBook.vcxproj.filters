@@ -42,6 +42,18 @@
     <ClInclude Include="CalendarBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Blog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Article.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AttribDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NewProjectDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BlogToBook.cpp">
@@ -60,6 +72,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CalendarBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Blog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Article.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AttribDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NewProjectDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

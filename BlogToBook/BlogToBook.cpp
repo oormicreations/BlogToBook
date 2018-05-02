@@ -55,7 +55,7 @@ CBlogToBookApp::CBlogToBookApp()
 
 	// TODO: replace application ID string below with unique ID string; recommended
 	// format for string is CompanyName.ProductName.SubProduct.VersionInformation
-	SetAppID(_T("BlogToBook.AppID.NoVersion"));
+	SetAppID(_T("OormiCreations.BlogToBook.Free.1"));
 
 	// TODO: add construction code here,
 	// Place all significant initialization in InitInstance
@@ -104,7 +104,7 @@ BOOL CBlogToBookApp::InitInstance()
 	// Change the registry key under which our settings are stored
 	// TODO: You should modify this string to be something appropriate
 	// such as the name of your company or organization
-	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
+	SetRegistryKey(_T("Oormi Creations"));
 	LoadStdProfileSettings(4);  // Load standard INI file options (including MRU)
 
 
@@ -136,6 +136,9 @@ BOOL CBlogToBookApp::InitInstance()
 	CCommandLineInfo cmdInfo;
 	ParseCommandLine(cmdInfo);
 
+	// Enable DDE Execute open
+	EnableShellOpen();
+	RegisterShellFileTypes(TRUE);
 
 
 	// Dispatch commands specified on the command line.  Will return FALSE if

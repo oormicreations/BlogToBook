@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package 
+	xmlns="http://www.idpf.org/2007/opf"
+	prefix="rendition: http://www.idpf.org/vocab/rendition/#"
+	version="3.0" xml:lang="en"
+	unique-identifier="uid" >
+
+
+<!-- METADATA	(?) http://idpf.org/epub/30/spec/epub30-publications.html#sec-metadata-elem -->
+	<metadata xmlns:dc="http://purl.org/dc/elements/1.1/">	<!--  -->
+		
+		<!-- About the Book -->
+		<dc:title id="en_title" xml:lang="en">b2btitle</dc:title>		
+		<dc:description id="en_description" xml:lang="en">b2bdescription</dc:description>
+		
+		<!-- Contributors -->
+		<dc:creator id="creator">b2bcreator1</dc:creator>	<!-- (?) http://idpf.org/epub/30/spec/epub30-publications.html#sec-opf-dccreator -->
+		<meta refines="#creator" property="file-as">b2bcreator2, b2bcreator3</meta>
+		<meta refines="#creator" property="role" scheme="marc:relators">aut</meta>
+		
+		<!-- Publication -->
+		<dc:publisher id="en_publisher" xml:lang="en">b2bpublisher</dc:publisher>
+		<dc:date>b2bdateyyyy-mm-dd</dc:date>
+		<dc:language>b2blanguageen</dc:language>
+		
+		<meta property="dcterms:modified">b2bmodified-yyyy-mm-ddTHH:MM:SSZ</meta> <!-- I think this helps with updates, basically -->
+		
+		<!-- Unique ID, e.g. ISBN, or generate a UUID here: http://www.itu.int/ITU-T/asn1/uuid.html -->
+		<dc:identifier id="uid">b2bisbn</dc:identifier>
+		
+		
+		<!-- License -->
+		<dc:rights id="en_rights" xml:lang="en">b2blic</dc:rights>
+
+		<!-- Cover Image -->
+		<meta name="cover" content="coverimage" />
+		
+		<!-- ePUB 3.0 Renditions and Media Overlays -->
+		<meta property="rendition:layout">reflowable</meta>	<!-- (?) http://idpf.org/epub/fxl/#property-defs -->
+		
+	</metadata>
+	
+	
+<!-- MANIFEST	(?) http://idpf.org/epub/30/spec/epub30-publications.html#sec-manifest-elem -->		
+	<manifest>
+	
+		<!-- Table of Contents -->
+		<item id="toc" href="toc.xhtml" properties="nav" media-type="application/xhtml+xml"/>
+		    
+		<!-- CSS -->
+		<item id="css" href="css/style.css" media-type="text/css"/>
+	
+		<!-- xHTML -->
+		<item id="cover" media-type="application/xhtml+xml" href="cover.xhtml"/>
+		<!--<item id="p01" media-type="application/xhtml+xml" href="p001.xhtml"/>-->
+    <!--b2baddpages-->
+	
+		<!-- Images -->
+		<item id="coverimage" href="images/book_cover.jpg" media-type="image/jpeg"/>
+    <!--b2baddimages-->
+
+  </manifest>
+
+	
+<!-- SPINE (?) http://idpf.org/epub/30/spec/epub30-publications.html#sec-spine-elem -->	
+	<spine page-progression-direction="ltr">
+		<itemref idref="cover"/>
+		<!--<itemref idref="p001" linear="yes"/>-->
+    <!--b2badditemref-->
+
+  </spine>
+
+</package>

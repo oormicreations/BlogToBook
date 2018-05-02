@@ -31,10 +31,11 @@ protected: // create from serialization only
 
 // Attributes
 public:
+	BOOL m_Ref;
 
-// Operations
+	// Operations
 public:
-
+	CMFCRibbonBar* GetRibbonBar() { return &m_wndRibbonBar; }
 // Overrides
 public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
@@ -42,10 +43,14 @@ public:
 // Implementation
 public:
 	virtual ~CMainFrame();
+	void SetCaption(CString str);
+
 #ifdef _DEBUG
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
 #endif
+
+
 
 protected:  // control bar embedded members
 	CMFCRibbonBar     m_wndRibbonBar;
@@ -68,6 +73,8 @@ protected:
 	afx_msg void OnFilePrint();
 	afx_msg void OnFilePrintPreview();
 	afx_msg void OnUpdateFilePrintPreview(CCmdUI* pCmdUI);
+	afx_msg void OnCheckRef();
+	afx_msg void OnUpdateCheckRef(CCmdUI *pCmdUI);
 	DECLARE_MESSAGE_MAP()
 
 	BOOL CreateOutlookBar(CMFCOutlookBar& bar, UINT uiID, CMFCShellTreeCtrl& tree, CCalendarBar& calendar, int nInitialWidth);
@@ -78,6 +85,7 @@ protected:
 	CMFCOutlookBarTabCtrl* FindOutlookParent(CWnd* pWnd);
 	CMFCOutlookBarTabCtrl* m_pCurrOutlookWnd;
 	CMFCOutlookBarPane*    m_pCurrOutlookPage;
+
 };
 
 

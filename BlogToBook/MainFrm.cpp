@@ -36,6 +36,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CMainFrame::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CMainFrame::OnFilePrintPreview)
 	ON_UPDATE_COMMAND_UI(ID_FILE_PRINT_PREVIEW, &CMainFrame::OnUpdateFilePrintPreview)
+	ON_COMMAND(ID_CHECK_REF, &CMainFrame::OnCheckRef)
+	ON_UPDATE_COMMAND_UI(ID_CHECK_REF, &CMainFrame::OnUpdateCheckRef)
 END_MESSAGE_MAP()
 
 // CMainFrame construction/destruction
@@ -44,6 +46,7 @@ CMainFrame::CMainFrame()
 {
 	// TODO: add member initialization code here
 	theApp.m_nAppLook = theApp.GetInt(_T("ApplicationLook"), ID_VIEW_APPLOOK_OFF_2007_BLACK);
+	m_Ref = TRUE;
 }
 
 CMainFrame::~CMainFrame()
@@ -102,6 +105,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	EnableAutoHidePanes(CBRS_ALIGN_RIGHT);
 	// set the visual manager and style based on persisted value
 	OnApplicationLook(theApp.m_nAppLook);
+
 
 	return 0;
 }
@@ -184,10 +188,10 @@ BOOL CMainFrame::CreateCaptionBar()
 	CString strTemp, strTemp2;
 	bNameValid = strTemp.LoadString(IDS_CAPTION_BUTTON);
 	ASSERT(bNameValid);
-	m_wndCaptionBar.SetButton(strTemp, ID_TOOLS_OPTIONS, CMFCCaptionBar::ALIGN_LEFT, FALSE);
-	bNameValid = strTemp.LoadString(IDS_CAPTION_BUTTON_TIP);
-	ASSERT(bNameValid);
-	m_wndCaptionBar.SetButtonToolTip(strTemp);
+	//m_wndCaptionBar.SetButton(strTemp, ID_TOOLS_OPTIONS, CMFCCaptionBar::ALIGN_LEFT, FALSE);
+	//bNameValid = strTemp.LoadString(IDS_CAPTION_BUTTON_TIP);
+	//ASSERT(bNameValid);
+	//m_wndCaptionBar.SetButtonToolTip(strTemp);
 
 	bNameValid = strTemp.LoadString(IDS_CAPTION_TEXT);
 	ASSERT(bNameValid);
@@ -201,6 +205,11 @@ BOOL CMainFrame::CreateCaptionBar()
 	m_wndCaptionBar.SetImageToolTip(strTemp, strTemp2);
 
 	return TRUE;
+}
+
+void CMainFrame::SetCaption(CString str)
+{
+	m_wndCaptionBar.SetText(str, CMFCCaptionBar::ALIGN_LEFT);
 }
 
 // CMainFrame diagnostics
@@ -344,3 +353,17 @@ void CMainFrame::OnUpdateFilePrintPreview(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetCheck(IsPrintPreview());
 }
+
+void CMainFrame::OnCheckRef()
+{
+	m_Ref = !m_Ref;
+	CView * view = GetActiveView();
+	if (view != NULL) view->Invalidate();
+}
+
+
+void CMainFrame::OnUpdateCheckRef(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck(m_Ref);
+}
+
