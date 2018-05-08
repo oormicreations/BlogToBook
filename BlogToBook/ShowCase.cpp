@@ -9,13 +9,14 @@
 #include <Wincrypt.h>
 #pragma comment(lib, "crypt32.lib")
 
-#define BUFSIZE 300 //multiple of 3
+#define BUFSIZE 2048
 
 #include <memory>
 #include <algorithm>
 
 string g_BookPath;
 string g_CoverPath;
+wstring g_Form;
 
 static const std::string base64_chars =
 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -346,13 +347,18 @@ string Utf8Encode(const wstring &wstr)
 
 UINT B2BDataProc(LPVOID param)
 {
+	//LPCWSTR pdata = (TCHAR*)param;
+	//string stra;
+	//stra = CT2A(pdata);
+
 	wstring fdata;
-	fdata.append((wchar_t*)param);
+	fdata = g_Form;
+	//fdata.append((wchar_t*)param);
 
 	static TCHAR hdrs[] = (_T("Content-Type: application/x-www-form-urlencoded; charset=utf-8"));
 	LPCTSTR accept[2] = { _T("*/*"), NULL };
 
-/*	HINTERNET hInternet = InternetOpen(_T("B2B Showcase"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+	HINTERNET hInternet = InternetOpen(_T("B2B Showcase"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
 
 	HINTERNET hSession = InternetConnect(hInternet, _T("b2b.oormi.in"), INTERNET_DEFAULT_HTTPS_PORT, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 1);
 
@@ -363,6 +369,7 @@ UINT B2BDataProc(LPVOID param)
 	string postData = Utf8Encode(fdata);//(L"b2bver=1.0.0&b2bid=12345678");
 
 	BOOL res = HttpSendRequest(hReq, headers.c_str(), headers.length(), (LPVOID)postData.c_str(), postData.size());
+	//BOOL res = HttpSendRequest(hReq, headers.c_str(), headers.length(), (LPVOID)stra.c_str(), stra.size());
 
 	if (res)
 	{
@@ -374,7 +381,11 @@ UINT B2BDataProc(LPVOID param)
 			{
 				szBuffer[dwRead] = 0;
 				CString str(szBuffer);
-				if (str != _T("Success")) return 1;
+				if (str != _T("Success"))
+				{
+					AfxMessageBox(_T("Error sending book data!"));
+					return 1;
+				}
 			}
 			else break;
 		}
@@ -384,31 +395,30 @@ UINT B2BDataProc(LPVOID param)
 	InternetCloseHandle(hReq);
 	InternetCloseHandle(hSession);
 	InternetCloseHandle(hInternet);
-*/
-	//string f = "C:\\Users\\Sanjeev\\Documents\\Oormi Creations\\Blog To Book\\B2B Project 01\\Raw\\pre001.txt";
+
 	CString str;
-	int res = UploadFile(g_CoverPath);
-	str.Format(_T("Error Upload Book File: %d"), res);
-	if (res)
+	int upres = UploadFile(g_CoverPath);
+	if (upres)
 	{
+		str.Format(_T("Error Upload Cover File: %d"), upres);
 		AfxMessageBox(str);
 		return 1;
 	}
-	else AfxMessageBox(_T("Uploaded"));
+	//else AfxMessageBox(_T("Uploaded"));
 
-	//res = UploadFile(g_BookPath);
-	//str.Format(_T("Error Upload Cover File: %d"), res);
-	//if (!res)
-	//{
-	//	AfxMessageBox(str);
-	//	return 1;
-	//}
+	upres = UploadFile(g_BookPath);
+	if (upres)
+	{
+		str.Format(_T("Error Upload Book File: %d"), upres);
+		AfxMessageBox(str);
+		return 1;
+	}
 
 
 	return 0;
 }
 
-BOOL CShowCase::B64Encode(CString sfilename)
+BOOL CShowCase::B64Encode(CString sfilename, CString id, int type)
 {
 	CFile sfile;
 	if (sfile.Open(sfilename, CFile::modeRead))
@@ -417,10 +427,10 @@ BOOL CShowCase::B64Encode(CString sfilename)
 		UINT slen = (UINT)sfile.GetLength();
 		if (slen > 0)
 		{
-			CString tfilename = sfilename;
-			tfilename.Replace(_T(".jpg"), _T(".jpg.txt"));
-			tfilename.Replace(_T(".epub"), _T(".epub.txt"));
-			//tfilename.Replace(_T("pre"), _T("epre"));
+			CString tfilename = sfile.GetFilePath();
+			tfilename.Replace(sfile.GetFileName(), id);
+			if (type == 1) tfilename = tfilename + _T(".jpg.txt");
+			if (type == 2) tfilename = tfilename + _T(".epub.txt");
 
 			CFile tfile;
 			if (tfile.Open(tfilename, CFile::modeWrite | CFile::modeCreate))
@@ -486,24 +496,24 @@ void CShowCase::OnBnClickedButtonScUpload()
 		formData = formData + params[i] + m_Data[i];
 	}
 
-	BOOL res1 = B64Encode(m_Data[10]);
-	//BOOL res1 = B64Encode(_T("C:\\Users\\Sanjeev\\Documents\\Oormi Creations\\Blog To Book\\B2B Project 01\\Raw\\pre005.txt")/*m_Data[10]*/);
-	//BOOL res2 = B64Encode(m_Data[16]);
+	BOOL res1 = B64Encode(m_Data[10], m_Data[1], 1);
+	BOOL res2 = B64Encode(m_Data[16], m_Data[1], 2);
 
-	//if (!res1 || !res2)
-	//{
-	//	AfxMessageBox(_T("Error encoding Ebook data:\r\n"));
-	//}
+	if (!res1 || !res2)
+	{
+		AfxMessageBox(_T("Error encoding Ebook data:\r\n"));
+		return;
+	}
 
-	//return;
-	m_Data[10].Replace(_T(".jpg"), _T(".jpg.txt"));
-	m_Data[16].Replace(_T(".epub"), _T(".epub.txt"));
-	g_CoverPath = CT2A(m_Data[10]);
-	g_BookPath = CT2A(m_Data[16]);
+	g_CoverPath = CT2A(m_Data[17] + _T("Raw\\") + m_Data[1] + _T(".jpg.txt"));
+
+	g_BookPath = CT2A(m_Data[17] + m_Data[1] + _T(".epub.txt"));
 
 	m_ProgCtrl.SetPos(10);
 
-	CWinThread* hTh1 = AfxBeginThread(B2BDataProc, formData.GetBuffer()/*B2BDataProc receives this as param */, THREAD_PRIORITY_NORMAL);
+	wstring stra(formData);
+	g_Form = stra;
+	CWinThread* hTh1 = AfxBeginThread(B2BDataProc, (LPVOID)stra.c_str()/*formData.GetBuffer()*//*B2BDataProc receives this as param */, THREAD_PRIORITY_NORMAL);
 
 	//m_Success =	m_Result == _T("Success");
 

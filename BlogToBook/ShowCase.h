@@ -23,7 +23,7 @@ public:
 
 	//string Utf8Encode(const wstring & wstr);
 	//void UploadFile(CString fpath);
-	BOOL B64Encode(CString file);
+	BOOL B64Encode(CString file, CString id, int type);
 
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DIALOG_SHOWCASE };

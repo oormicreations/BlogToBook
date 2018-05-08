@@ -1181,7 +1181,9 @@ void CBlogToBookDoc::OnButtonShowcase()
 	scDlg.m_Data[14] = m_SCEntries[2];
 	scDlg.m_Data[15] = _T("EPUB");
 	scDlg.m_Data[16] = m_BookFile;
-	scDlg.m_DataCount = 16;//don't count bookfile
+	scDlg.m_Data[17] = m_ProjectPath;
+
+	scDlg.m_DataCount = 16;//don't count bookfile and projectpath
 
 	scDlg.DoModal();
 
