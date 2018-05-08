@@ -582,6 +582,8 @@ void CBlogToBookView::OnButtonRender()
 	ASSERT_VALID(pDoc);
 	if (!pDoc) return;
 
+	pDoc->UpdateB2BData();//extra pages are not updated, just fields in the ribbon
+
 	m_Render = TRUE;
 	m_ChapterRendered = FALSE;
 	m_ChapterNum = 0;

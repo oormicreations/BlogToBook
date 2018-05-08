@@ -563,6 +563,31 @@ BEGIN
     PUSHBUTTON      "Open Existing Project...",IDC_BUTTON_PROJOPEN,136,96,102,14
 END
 
+IDD_DIALOG_SHOWCASE DIALOGEX 0, 0, 371, 298
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Showcase your EBook"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Close",IDOK,289,277,75,14
+    PUSHBUTTON      "Cancel",IDCANCEL,281,148,50,14,NOT WS_VISIBLE
+    CTEXT           "This is a free service. You can show off your awesome EBook online.",IDC_STATIC,6,6,358,15,SS_CENTERIMAGE | SS_SUNKEN
+    LTEXT           "Optional Additional Info:",IDC_STATIC,7,152,84,8
+    EDITTEXT        IDC_EDIT_SC_PLINK,101,169,264,14,ES_AUTOHSCROLL
+    LTEXT           "Link to Print Edition:",IDC_STATIC,7,172,84,8
+    EDITTEXT        IDC_EDIT_SC_TAGS,101,191,264,14,ES_AUTOHSCROLL
+    LTEXT           "Tags or Categories:",IDC_STATIC,7,194,84,8
+    EDITTEXT        IDC_EDIT_SC_COMMENTS,101,212,264,14,ES_AUTOHSCROLL
+    LTEXT           "Any Comments:",IDC_STATIC,7,215,84,8
+    PUSHBUTTON      "Visit B2B Showcase",IDC_BUTTON_SC_VISIT,101,277,75,14
+    CONTROL         "terms and conditions, and privacy policy",IDC_SC_TCLINK,
+                    "MfcLink",WS_TABSTOP,118,235,134,14
+    CONTROL         "I have read and I agree to the",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,236,109,10
+    PUSHBUTTON      "Upload",IDC_BUTTON_SC_UPLOAD,195,277,75,14
+    CONTROL         "",IDC_PROGRESS_SC,"msctls_progress32",WS_BORDER,7,256,357,7
+    PUSHBUTTON      "Remove",IDC_BUTTON_SC_REM,7,277,75,14
+    CONTROL         "",IDC_LIST_SCDATA,"SysListView32",LVS_REPORT | LVS_EDITLABELS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,28,357,118
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -587,6 +612,14 @@ BEGIN
         TOPMARGIN, 12
         BOTTOMMARGIN, 110
     END
+
+    IDD_DIALOG_SHOWCASE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 364
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 291
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -602,6 +635,11 @@ BEGIN
 END
 
 IDD_DIALOG_NEW_PROJECT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_SHOWCASE AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -647,6 +685,31 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_DIALOG_SHOWCASE DLGINIT
+BEGIN
+    IDC_SC_TCLINK, 0x37c, 225, 0
+0x4d3c, 0x4346, 0x694c, 0x6b6e, 0x555f, 0x6c72, 0x683e, 0x7474, 0x3a70, 
+0x2f2f, 0x3262, 0x2e62, 0x6f6f, 0x6d72, 0x2e69, 0x6e69, 0x612f, 0x7267, 
+0x6565, 0x656d, 0x746e, 0x682e, 0x6d74, 0x3c6c, 0x4d2f, 0x4346, 0x694c, 
+0x6b6e, 0x555f, 0x6c72, 0x3c3e, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 0x7255, 
+0x506c, 0x6572, 0x6966, 0x3e78, 0x2f3c, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 
+0x7255, 0x506c, 0x6572, 0x6966, 0x3e78, 0x4d3c, 0x4346, 0x694c, 0x6b6e, 
+0x545f, 0x6f6f, 0x746c, 0x7069, 0x683e, 0x7474, 0x3a70, 0x2f2f, 0x3262, 
+0x2e62, 0x6f6f, 0x6d72, 0x2e69, 0x6e69, 0x612f, 0x7267, 0x6565, 0x656d, 
+0x746e, 0x682e, 0x6d74, 0x3c6c, 0x4d2f, 0x4346, 0x694c, 0x6b6e, 0x545f, 
+0x6f6f, 0x746c, 0x7069, 0x3c3e, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 0x7546, 
+0x6c6c, 0x6554, 0x7478, 0x6f54, 0x6c6f, 0x6974, 0x3e70, 0x4146, 0x534c, 
+0x3c45, 0x4d2f, 0x4346, 0x694c, 0x6b6e, 0x465f, 0x6c75, 0x546c, 0x7865, 
+0x5474, 0x6f6f, 0x746c, 0x7069, "\076" 
+    0
+END
 
 #endif    // English (India) resources
 /////////////////////////////////////////////////////////////////////////////

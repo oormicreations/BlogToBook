@@ -59,6 +59,7 @@
 #define ID_ARTICLE_LIST                 308
 #define IDD_DIALOG_ATTRIB               311
 #define IDD_DIALOG_NEW_PROJECT          313
+#define IDD_DIALOG_SHOWCASE             315
 #define IDC_EDIT_ATT_HEAD               1000
 #define IDC_CHECK_ATT_INCULDE           1001
 #define IDC_EDIT_ATT_CONTENT            1002
@@ -66,6 +67,17 @@
 #define IDC_EDIT_PROJFOLDER             1004
 #define IDC_BUTTON_PROJBROWSE           1005
 #define IDC_BUTTON_PROJOPEN             1006
+#define IDC_EDIT_SC_PLINK               1006
+#define IDC_EDIT_SC_TAGS                1007
+#define IDC_EDIT_SC_COMMENTS            1008
+#define IDC_BUTTON_SC_VISIT             1009
+#define IDC_SC_TCLINK                   1010
+#define IDC_CHECK1                      1011
+#define IDC_BUTTON_SC_UPLOAD            1012
+#define IDC_PROGRESS_SC                 1013
+#define IDC_BUTTON_SC_REM               1014
+#define IDC_LIST1                       1019
+#define IDC_LIST_SCDATA                 1019
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_BUTTON_FETCH                 32771
 #define ID_BUTTON_RENDER                32772
@@ -110,9 +122,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        315
+#define _APS_NEXT_RESOURCE_VALUE        318
 #define _APS_NEXT_COMMAND_VALUE         32813
-#define _APS_NEXT_CONTROL_VALUE         1006
+#define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

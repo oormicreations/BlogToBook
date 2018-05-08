@@ -27,6 +27,7 @@
 #include "wininet.h"
 #include "MainFrm.h"
 #include "AttribDlg.h"
+#include "ShowCase.h"
 
 
 #ifdef _DEBUG
@@ -100,7 +101,7 @@ CBlogToBookDoc::CBlogToBookDoc()
 		ReportUsage();
 	}
 
-	ReportUsage();//test
+	//ReportUsage();//test
 
 }
 
@@ -188,7 +189,8 @@ void CBlogToBookDoc::Serialize(CArchive& ar)
 			<< m_Blog.m_YearStart << m_Blog.m_YearEnd << m_Blog.m_MonthStart << m_Blog.m_MonthEnd
 			<< m_Blog.m_BlogAuthor << m_Blog.m_BlogDesc << m_Blog.m_BlogISBN << m_Blog.m_BlogLang << m_Blog.m_BlogModDate 
 			<< m_Blog.m_BlogName << m_Blog.m_BlogPlublisher << m_Blog.m_BlogPubDate << m_Blog.m_BlogUrl
-			<< m_Blog.m_IncludeB2BRef << m_BFontSz << m_TFontSz << m_BFont << m_TFont;
+			<< m_Blog.m_IncludeB2BRef << m_BFontSz << m_TFontSz << m_BFont << m_TFont
+			<< m_SCID << m_BookFile;
 	}
 	else
 	{
@@ -197,7 +199,8 @@ void CBlogToBookDoc::Serialize(CArchive& ar)
 			>> m_Blog.m_YearStart >> m_Blog.m_YearEnd >> m_Blog.m_MonthStart >> m_Blog.m_MonthEnd
 			>> m_Blog.m_BlogAuthor >> m_Blog.m_BlogDesc >> m_Blog.m_BlogISBN >> m_Blog.m_BlogLang >> m_Blog.m_BlogModDate
 			>> m_Blog.m_BlogName >> m_Blog.m_BlogPlublisher >> m_Blog.m_BlogPubDate >> m_Blog.m_BlogUrl
-			>> m_Blog.m_IncludeB2BRef >> m_BFontSz >> m_TFontSz >> m_BFont >> m_TFont;
+			>> m_Blog.m_IncludeB2BRef >> m_BFontSz >> m_TFontSz >> m_BFont >> m_TFont
+			>> m_SCID >> m_BookFile;
 	}
 }
 
@@ -731,8 +734,7 @@ void CBlogToBookDoc::OnButtonSaveepub()
 		return;
 	}
 
-	m_Blog.GetBlogInfo();
-	m_Blog.GetBookInfo();
+	UpdateB2BData();
 
 	ShowCaption(_T("Saving as EPUB: ") + m_Blog.m_BlogName);
 
@@ -883,7 +885,8 @@ void CBlogToBookDoc::OnButtonSaveepub()
 		if (!IsFileLocked(m_ProjectPath + _T("epub.zip")) )
 		{
 			//rename
-			CFile::Rename(m_ProjectPath + _T("epub.zip"), m_ProjectPath + m_Blog.m_BlogName + _T(".epub"));
+			m_BookFile = m_ProjectPath + m_Blog.m_BlogName + _T(".epub");
+			CFile::Rename(m_ProjectPath + _T("epub.zip"), m_BookFile);
 			break;
 		}
 		else
@@ -1116,11 +1119,85 @@ void CBlogToBookDoc::OnButtonShowfolder()
 	ShellExecute(NULL, _T("open"), m_ProjectPath, NULL, NULL, SW_SHOW);
 }
 
+CString CBlogToBookDoc::GetSCID()
+{
+	srand((UINT)time(0));
+	m_SCID.Format(_T("%04d%04d"), rand()%9999, rand()%9999);
+
+	return m_SCID;
+}
 
 void CBlogToBookDoc::OnButtonShowcase()
 {
-	ShellExecute(NULL, _T("open"), _T("https://b2b.oormi.in"), NULL, NULL, SW_SHOWNORMAL);
+	if (!m_IsProjectLoaded)
+	{
+		OnNewDocument();
+		if (!m_IsProjectLoaded)return;
+	}
 
+	if (m_BookFile.IsEmpty())
+	{
+		int res = AfxMessageBox(_T("You need to save your EBook as EPUB.\r\nWould you like to do it now?"), MB_YESNO);
+		if (res == IDYES)
+		{
+			OnButtonSaveepub();
+		}
+	}
+
+	if (!m_SCID.IsEmpty())
+	{
+		int res = AfxMessageBox(_T("This Ebook was already showcased.\r\nWould you like to view it now?"), MB_YESNO);
+		if (res == IDYES) 
+		{
+			ShellExecute(NULL, _T("open"), _T("https://b2b.oormi.in/showbook.php?b2bid=") + m_SCID, NULL, NULL, SW_SHOWNORMAL);
+		}
+	}
+
+	UpdateB2BData();
+
+	if (m_Blog.m_BlogName.IsEmpty()) { AfxMessageBox(_T("Blog Name is required! Ensure that its not empty.")); return; }
+	if (m_Blog.m_BlogAuthor.IsEmpty()) { AfxMessageBox(_T("Blog author is required! Ensure that its not empty.")); return; }
+	if (m_Blog.m_BlogUrl.IsEmpty()) { AfxMessageBox(_T("Blog url is required! Ensure that its not empty.")); return; }
+	if (m_Blog.m_BlogDesc.IsEmpty()) { AfxMessageBox(_T("Blog description is required! Ensure that its not empty.")); return; }
+
+	CShowCase scDlg;
+
+	//init
+	m_SCID = _T("");
+	scDlg.m_Data[0].Format(_T("%d"), m_B2BVersion);
+	scDlg.m_Data[1] = GetSCID();
+	scDlg.m_Data[2] = m_Blog.m_BlogName;
+	scDlg.m_Data[3] = m_Blog.m_BlogAuthor;
+	scDlg.m_Data[4] = m_Blog.m_BlogUrl;
+	scDlg.m_Data[5] = m_Blog.m_BlogDesc;
+	scDlg.m_Data[6] = m_Blog.m_BlogPlublisher;
+	scDlg.m_Data[7] = m_Blog.m_BlogPubDate;
+	scDlg.m_Data[8] = m_Blog.m_BlogLang;
+	scDlg.m_Data[9] = m_Blog.m_BlogISBN;
+	scDlg.m_Data[10] = m_RawDataPath + m_Blog.m_CoverPath;
+	scDlg.m_Data[11] = m_Blog.m_Copyright;
+	scDlg.m_Data[12] = m_SCEntries[0];
+	scDlg.m_Data[13] = m_SCEntries[1];
+	scDlg.m_Data[14] = m_SCEntries[2];
+	scDlg.m_Data[15] = _T("EPUB");
+	scDlg.m_Data[16] = m_BookFile;
+	scDlg.m_DataCount = 16;//don't count bookfile
+
+	scDlg.DoModal();
+
+	m_SCEntries[0] = scDlg.m_Data[12];
+	m_SCEntries[1] = scDlg.m_Data[13];
+	m_SCEntries[2] = scDlg.m_Data[14];
+
+	if (scDlg.m_Success)
+	{
+		ShowCaption(_T("Your EBook was showcased successfully!"));
+	}
+	else
+	{
+		m_SCID = _T("");
+		ShowCaption(_T("There was an error showcasing your EBook. Check your internet connection and try again."));
+	}
 }
 
 
@@ -1569,7 +1646,7 @@ void CBlogToBookDoc::LoadSettings()
 	if (!m_IsSettFileOpen) { return; }
 	CArchive archive(&SettFile, CArchive::load);
 
-	int ver, type;
+	int ver;
 	archive >> ver;
 
 	if (ver == m_B2BVersion)
@@ -1579,5 +1656,15 @@ void CBlogToBookDoc::LoadSettings()
 
 	archive.Close();
 	SettFile.Close();
+
+}
+
+void CBlogToBookDoc::UpdateB2BData()
+{
+	m_Blog.GetBlogInfo();
+	m_Blog.GetBookInfo();
+	
+	m_Blog.SetBlogInfo();
+	m_Blog.SetBookInfo();
 
 }

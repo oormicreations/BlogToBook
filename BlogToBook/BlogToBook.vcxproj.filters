@@ -54,6 +54,9 @@
     <ClInclude Include="NewProjectDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ShowCase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BlogToBook.cpp">
@@ -84,6 +87,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NewProjectDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShowCase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

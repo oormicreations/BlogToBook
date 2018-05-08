@@ -65,7 +65,7 @@ public:
 	CBlog m_Blog;
 	
 	CString m_BlogPageRaw, m_BlogPagePreview, m_Status, m_Index, m_B2BRef, m_B2BRefPre;
-	CString /*m_UserPath,*/ m_BlankPath, m_ProjectPath, m_ProjectName, m_RawDataPath;
+	CString /*m_UserPath,*/ m_BlankPath, m_ProjectPath, m_ProjectName, m_RawDataPath, m_BookFile;
 
 	CString m_Titles[MAXARTICLES];
 	CString m_TitleUrls[MAXARTICLES];
@@ -77,9 +77,12 @@ public:
 	int m_ChapterList[MAXARTICLES];
 	int m_ChapterNumDisp[MAXARTICLES];
 	
-
 	int m_BFontSz, m_TFontSz;
 	CString m_BFont, m_TFont;
+
+	CString m_SCEntries[3];
+	CString m_SCID;
+
 
 	BOOL Fetch(CString url);
 	BOOL ParseTitles();
@@ -105,10 +108,13 @@ public:
 	void SetProjectPaths();
 	void EditAttributes(int arNum);
 	void SetRenderFonts();
+
+	void UpdateB2BData();
 	
 	void ReportUsage();
 	void SaveSettings();
 	void LoadSettings();
+	CString GetSCID();
 
 	afx_msg void OnButtonFetch();
 	afx_msg void OnButtonSaveepub();
