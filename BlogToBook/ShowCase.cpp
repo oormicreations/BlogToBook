@@ -6,18 +6,25 @@
 #include "ShowCase.h"
 #include "afxdialogex.h"
 #include "wininet.h"
-#include <Wincrypt.h>
-#pragma comment(lib, "crypt32.lib")
-
-#define BUFSIZE 2048
-
+//#include <Wincrypt.h>
 #include <memory>
 #include <algorithm>
+//#pragma comment(lib, "crypt32.lib")
+
+#define BUFSIZE 2048
+#define SC_THREAD_NOTIFY (WM_APP + 1)
+
 
 string g_BookPath;
 string g_CoverPath;
 wstring g_Form;
 BOOL g_Success;
+
+struct ThreadParam
+{
+	HWND mDlg;
+};
+
 
 static const std::string base64_chars =
 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -323,11 +330,24 @@ BEGIN_MESSAGE_MAP(CShowCase, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_SC_UPLOAD, &CShowCase::OnBnClickedButtonScUpload)
 	ON_BN_CLICKED(IDOK, &CShowCase::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_BUTTON_SC_REM, &CShowCase::OnBnClickedButtonScRem)
+	ON_MESSAGE(SC_THREAD_NOTIFY, OnSCThreadNotify)
 END_MESSAGE_MAP()
 
 
 // CShowCase message handlers
+LRESULT CShowCase::OnSCThreadNotify(WPARAM wp, LPARAM lp)
+{
+	m_ProgCtrl.SetPos((int)wp);
 
+	if ((int)lp == 3) SetDlgItemText(IDC_EDIT_SCMSG, _T("Sending data"));
+	if ((int)lp == 5) SetDlgItemText(IDC_EDIT_SCMSG, _T("Data uploaded"));
+	if ((int)lp == 7) SetDlgItemText(IDC_EDIT_SCMSG, _T("Cover image uploaded"));
+	if ((int)lp == 9) SetDlgItemText(IDC_EDIT_SCMSG, _T("EBook uploaded. Its Done!"));
+
+	if ((int)lp == 10) ShellExecute(NULL, _T("open"), _T("http://b2b.oormi.in"), NULL, NULL, SW_SHOWNORMAL);
+
+	return 0;
+}
 
 void CShowCase::OnBnClickedButtonScVisit()
 {
@@ -349,6 +369,8 @@ string Utf8Encode(const wstring &wstr)
 
 UINT B2BDataProc(LPVOID param)
 {
+	ThreadParam* p = static_cast<ThreadParam*> (param);
+
 	//LPCWSTR pdata = (TCHAR*)param;
 	//string stra;
 	//stra = CT2A(pdata);
@@ -369,6 +391,8 @@ UINT B2BDataProc(LPVOID param)
 	wstring headers = L"Content-Type: application/x-www-form-urlencoded; charset=utf-8";
 
 	string postData = Utf8Encode(fdata);//(L"b2bver=1.0.0&b2bid=12345678");
+
+	::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 30, 3);
 
 	BOOL res = HttpSendRequest(hReq, headers.c_str(), headers.length(), (LPVOID)postData.c_str(), postData.size());
 	//BOOL res = HttpSendRequest(hReq, headers.c_str(), headers.length(), (LPVOID)stra.c_str(), stra.size());
@@ -398,6 +422,8 @@ UINT B2BDataProc(LPVOID param)
 	InternetCloseHandle(hSession);
 	InternetCloseHandle(hInternet);
 
+	::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 50, 5);
+
 	CString str;
 	int upres = UploadFile(g_CoverPath);
 	if (upres)
@@ -407,6 +433,7 @@ UINT B2BDataProc(LPVOID param)
 		return 1;
 	}
 	//else AfxMessageBox(_T("Uploaded"));
+	::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 75, 7);
 
 	upres = UploadFile(g_BookPath);
 	if (upres)
@@ -415,8 +442,13 @@ UINT B2BDataProc(LPVOID param)
 		AfxMessageBox(str);
 		return 1;
 	}
+	::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 90, 9);
+	Sleep(1000);
+	::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 100, 10);
 
 	g_Success = TRUE;
+
+	delete p;
 	return 0;
 }
 
@@ -513,6 +545,9 @@ void CShowCase::OnBnClickedButtonScUpload()
 		formData = formData + params[i] + m_Data[i];
 	}
 
+	SetDlgItemText(IDC_EDIT_SCMSG, _T("Encoding data"));
+	m_ProgCtrl.SetPos(10);
+
 	BOOL res1 = B64Encode(m_Data[10], m_Data[1], 1);
 	BOOL res2 = B64Encode(m_Data[16], m_Data[1], 2);
 
@@ -522,12 +557,18 @@ void CShowCase::OnBnClickedButtonScUpload()
 		return;
 	}
 
-
-	m_ProgCtrl.SetPos(10);
+	SetDlgItemText(IDC_EDIT_SCMSG, _T("Connecting to server"));
+	m_ProgCtrl.SetPos(20);
 
 	wstring stra(formData);
 	g_Form = stra;//not working when passed via thread
-	CWinThread* hTh1 = AfxBeginThread(B2BDataProc, (LPVOID)stra.c_str()/*formData.GetBuffer()*//*B2BDataProc receives this as param */, THREAD_PRIORITY_NORMAL);
+
+	ThreadParam* param = new ThreadParam;
+	param->mDlg = m_hWnd;  // A handle, not a dangerous 'this'
+
+	CWinThread* hTh1 = AfxBeginThread(B2BDataProc, param);// (LPVOID)stra.c_str()/*formData.GetBuffer()*//*B2BDataProc receives this as param */, THREAD_PRIORITY_NORMAL);
+
+	param = 0; // The other thread shall delete it
 
 	//m_Success =	m_Result == _T("Success");
 
@@ -557,7 +598,7 @@ BOOL CShowCase::OnInitDialog()
 	_T("Author"),
 	_T("Url"),
 	_T("Description"),
-	_T("Plublisher"),
+	_T("Publisher"),
 	_T("Date Published"),
 	_T("Language"),
 	_T("ISBN") };
@@ -573,6 +614,7 @@ BOOL CShowCase::OnInitDialog()
 
 	m_SCListCtrl.SetExtendedStyle(m_SCListCtrl.GetExtendedStyle() | LVS_EX_GRIDLINES);
 
+	SetDlgItemText(IDC_EDIT_SCMSG, _T("This is a free service.You can show off your awesome EBook online."));
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // EXCEPTION: OCX Property Pages should return FALSE

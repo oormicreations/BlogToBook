@@ -569,23 +569,23 @@ CAPTION "Showcase your EBook"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Close",IDOK,289,277,75,14
-    PUSHBUTTON      "Cancel",IDCANCEL,281,148,50,14,NOT WS_VISIBLE
-    CTEXT           "This is a free service. You can show off your awesome EBook online.",IDC_STATIC,6,6,358,15,SS_CENTERIMAGE | SS_SUNKEN
-    LTEXT           "Optional Additional Info:",IDC_STATIC,7,152,84,8
-    EDITTEXT        IDC_EDIT_SC_PLINK,101,169,264,14,ES_AUTOHSCROLL
-    LTEXT           "Link to Print Edition:",IDC_STATIC,7,172,84,8
-    EDITTEXT        IDC_EDIT_SC_TAGS,101,191,264,14,ES_AUTOHSCROLL
-    LTEXT           "Tags or Categories:",IDC_STATIC,7,194,84,8
-    EDITTEXT        IDC_EDIT_SC_COMMENTS,101,212,264,14,ES_AUTOHSCROLL
-    LTEXT           "Any Comments:",IDC_STATIC,7,215,84,8
+    PUSHBUTTON      "Cancel",IDCANCEL,281,127,50,14,NOT WS_VISIBLE
+    LTEXT           "Optional Additional Info:",IDC_STATIC,7,130,84,8
+    EDITTEXT        IDC_EDIT_SC_PLINK,101,148,264,14,ES_AUTOHSCROLL
+    LTEXT           "Link to Print Edition:",IDC_STATIC,7,151,84,8
+    EDITTEXT        IDC_EDIT_SC_TAGS,101,169,264,14,ES_AUTOHSCROLL
+    LTEXT           "Tags or Categories:",IDC_STATIC,7,172,84,8
+    EDITTEXT        IDC_EDIT_SC_COMMENTS,101,191,264,14,ES_AUTOHSCROLL
+    LTEXT           "Any Comments:",IDC_STATIC,7,193,84,8
     PUSHBUTTON      "Visit B2B Showcase",IDC_BUTTON_SC_VISIT,101,277,75,14
     CONTROL         "terms and conditions, and privacy policy",IDC_SC_TCLINK,
-                    "MfcLink",WS_TABSTOP,118,235,134,14
-    CONTROL         "I have read and I agree to the",IDC_CHECK_TERMS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,236,109,10
+                    "MfcLink",WS_TABSTOP,118,214,134,14
+    CONTROL         "I have read and I agree to the",IDC_CHECK_TERMS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,215,109,10
     PUSHBUTTON      "Upload",IDC_BUTTON_SC_UPLOAD,195,277,75,14
-    CONTROL         "",IDC_PROGRESS_SC,"msctls_progress32",WS_BORDER,7,256,357,7
+    CONTROL         "",IDC_PROGRESS_SC,"msctls_progress32",WS_BORDER,7,234,357,7
     PUSHBUTTON      "Remove",IDC_BUTTON_SC_REM,7,277,75,14
-    CONTROL         "",IDC_LIST_SCDATA,"SysListView32",LVS_REPORT | LVS_EDITLABELS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,28,357,118
+    CONTROL         "",IDC_LIST_SCDATA,"SysListView32",LVS_REPORT | LVS_EDITLABELS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,7,357,118
+    EDITTEXT        IDC_EDIT_SCMSG,7,249,357,14,ES_CENTER | ES_AUTOHSCROLL | ES_READONLY
 END
 
 

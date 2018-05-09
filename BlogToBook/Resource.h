@@ -72,12 +72,13 @@
 #define IDC_EDIT_SC_COMMENTS            1008
 #define IDC_BUTTON_SC_VISIT             1009
 #define IDC_SC_TCLINK                   1010
-#define IDC_CHECK1                      1011
 #define IDC_CHECK_TERMS                 1011
 #define IDC_BUTTON_SC_UPLOAD            1012
 #define IDC_PROGRESS_SC                 1013
 #define IDC_BUTTON_SC_REM               1014
 #define IDC_LIST_SCDATA                 1019
+#define IDC_EDIT1                       1020
+#define IDC_EDIT_SCMSG                  1020
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_BUTTON_FETCH                 32771
 #define ID_BUTTON_RENDER                32772
@@ -124,7 +125,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        318
 #define _APS_NEXT_COMMAND_VALUE         32813
-#define _APS_NEXT_CONTROL_VALUE         1020
+#define _APS_NEXT_CONTROL_VALUE         1021
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

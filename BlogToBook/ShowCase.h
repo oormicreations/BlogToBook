@@ -19,6 +19,7 @@ public:
 	CString m_Data[20];
 	int m_DataCount;
 	CProgressCtrl m_ProgCtrl;
+	CListCtrl m_SCListCtrl;
 
 	//string Utf8Encode(const wstring & wstr);
 	//void UploadFile(CString fpath);
@@ -38,5 +39,5 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedButtonScRem();
-	CListCtrl m_SCListCtrl;
+	afx_msg LRESULT OnSCThreadNotify(WPARAM, LPARAM);
 };
