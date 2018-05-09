@@ -339,12 +339,22 @@ LRESULT CShowCase::OnSCThreadNotify(WPARAM wp, LPARAM lp)
 {
 	m_ProgCtrl.SetPos((int)wp);
 
+	if ((int)lp == 0)
+	{
+		SetDlgItemText(IDC_EDIT_SCMSG, _T("Error in communication. Check internet connection."));
+		GetDlgItem(IDC_BUTTON_SC_UPLOAD)->EnableWindow(TRUE);
+	}
+
 	if ((int)lp == 3) SetDlgItemText(IDC_EDIT_SCMSG, _T("Sending data"));
 	if ((int)lp == 5) SetDlgItemText(IDC_EDIT_SCMSG, _T("Data uploaded"));
 	if ((int)lp == 7) SetDlgItemText(IDC_EDIT_SCMSG, _T("Cover image uploaded"));
 	if ((int)lp == 9) SetDlgItemText(IDC_EDIT_SCMSG, _T("EBook uploaded. Its Done!"));
 
-	if ((int)lp == 10) ShellExecute(NULL, _T("open"), _T("http://b2b.oormi.in"), NULL, NULL, SW_SHOWNORMAL);
+	if ((int)lp == 10)
+	{
+		ShellExecute(NULL, _T("open"), _T("http://b2b.oormi.in"), NULL, NULL, SW_SHOWNORMAL);
+		GetDlgItem(IDC_BUTTON_SC_UPLOAD)->EnableWindow(TRUE);
+	}
 
 	return 0;
 }
@@ -422,6 +432,8 @@ UINT B2BDataProc(LPVOID param)
 	InternetCloseHandle(hSession);
 	InternetCloseHandle(hInternet);
 
+	if (!res) ::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 0, 0);
+
 	::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 50, 5);
 
 	CString str;
@@ -429,6 +441,7 @@ UINT B2BDataProc(LPVOID param)
 	if (upres)
 	{
 		str.Format(_T("Error Upload Cover File: %d"), upres);
+		::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 0, 0);
 		AfxMessageBox(str);
 		return 1;
 	}
@@ -439,6 +452,7 @@ UINT B2BDataProc(LPVOID param)
 	if (upres)
 	{
 		str.Format(_T("Error Upload Book File: %d"), upres);
+		::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 0, 0);
 		AfxMessageBox(str);
 		return 1;
 	}
@@ -558,6 +572,7 @@ void CShowCase::OnBnClickedButtonScUpload()
 	}
 
 	SetDlgItemText(IDC_EDIT_SCMSG, _T("Connecting to server"));
+	GetDlgItem(IDC_BUTTON_SC_UPLOAD)->EnableWindow(FALSE);
 	m_ProgCtrl.SetPos(20);
 
 	wstring stra(formData);
@@ -639,9 +654,16 @@ void CShowCase::OnBnClickedButtonScRem()
 		return;
 	}
 
+	if (!InternetCheckConnection(_T("http://www.google.com"), FLAG_ICC_FORCE_CONNECTION, 0))
+	{
+		SetDlgItemText(IDC_EDIT_SCMSG, _T("You are offline!"));
+		return;
+	}
+
 	ShellExecute(NULL, _T("open"), _T("https://b2b.oormi.in/remove.php?b2blic=") + m_Data[11] + _T("&b2bid=") + m_Data[1], NULL, NULL, SW_SHOWNORMAL);
 	m_Removed = TRUE;
 	g_Success = FALSE;
+	SetDlgItemText(IDC_EDIT_SCMSG, _T("EBook removed"));
 
 }
 

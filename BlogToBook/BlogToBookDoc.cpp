@@ -726,6 +726,12 @@ void CBlogToBookDoc::OnButtonFetch()
 
 void CBlogToBookDoc::OnButtonSaveepub()
 {
+	if (m_B2BFile.IsEmpty())
+	{
+		AfxMessageBox(_T("You need to save your project before you can save the book."));
+		return;
+	}
+
 	CFrameWnd * fwnd = (CFrameWnd *)AfxGetMainWnd();
 	CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
 	if (view == NULL)return;
@@ -1172,6 +1178,12 @@ void CBlogToBookDoc::OnButtonShowcase()
 	if (m_Blog.m_BlogUrl.IsEmpty()) { AfxMessageBox(_T("Blog url is required! Ensure that its not empty.")); return; }
 	if (m_Blog.m_BlogDesc.IsEmpty()) { AfxMessageBox(_T("Blog description is required! Ensure that its not empty.")); return; }
 
+	if(SaveCoverThumb() != S_OK)
+	{
+		AfxMessageBox(_T("Error in saving book cover thumb image."));
+		return;
+	}
+
 	CShowCase scDlg;
 
 	//init
@@ -1317,11 +1329,14 @@ void CBlogToBookDoc::OnButtonCover()
 
 }
 
-void CBlogToBookDoc::SaveCoverThumb()
+HRESULT CBlogToBookDoc::SaveCoverThumb()
 {
 	CImage image;
 	CString imagePath = m_RawDataPath + _T("book_cover.jpg");
+
+	HRESULT hrs = S_FALSE;
 	HRESULT hr = image.Load(imagePath);
+
 	if (hr == S_OK)
 	{
 		int h = image.GetHeight();
@@ -1354,7 +1369,7 @@ void CBlogToBookDoc::SaveCoverThumb()
 
 			CImage new_image;
 			new_image.Attach((HBITMAP)(*pb));
-			new_image.Save(m_RawDataPath + _T("book_cover_small.jpg"));
+			hrs = new_image.Save(m_RawDataPath + _T("book_cover_small.jpg"));
 
 			new_image.Detach();
 			view->ReleaseDC(screenDC);
@@ -1365,7 +1380,7 @@ void CBlogToBookDoc::SaveCoverThumb()
 			delete pMDC;
 		}
 	}
-
+	return hrs;
 }
 
 

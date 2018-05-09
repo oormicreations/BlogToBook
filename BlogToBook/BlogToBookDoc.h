@@ -115,7 +115,7 @@ public:
 	void SaveSettings();
 	void LoadSettings();
 	CString GetSCID();
-	void SaveCoverThumb();
+	HRESULT SaveCoverThumb();
 
 	afx_msg void OnButtonFetch();
 	afx_msg void OnButtonSaveepub();
