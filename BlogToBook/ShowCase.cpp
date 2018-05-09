@@ -17,6 +17,7 @@
 string g_BookPath;
 string g_CoverPath;
 wstring g_Form;
+BOOL g_Success;
 
 static const std::string base64_chars =
 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -284,6 +285,7 @@ int UploadFile(string filename)
 		return 11;
 	}
 
+
 	if (!HttpEndRequest(hreq.get(), NULL, HSR_INITIATE, 0))
 	{
 		return 12;
@@ -414,7 +416,7 @@ UINT B2BDataProc(LPVOID param)
 		return 1;
 	}
 
-
+	g_Success = TRUE;
 	return 0;
 }
 
@@ -427,17 +429,19 @@ BOOL CShowCase::B64Encode(CString sfilename, CString id, int type)
 		UINT slen = (UINT)sfile.GetLength();
 		if (slen > 0)
 		{
-			CString tfilename = sfile.GetFilePath();
-			tfilename.Replace(sfile.GetFileName(), id);
-			if (type == 1) tfilename = tfilename + _T(".jpg.txt");
-			if (type == 2) tfilename = tfilename + _T(".epub.txt");
+			CString tfilename = sfilename;
+			CString sname = sfile.GetFileName();
+			tfilename.Replace(sname , id + _T("---") + sname + _T(".txt"));
+
+			if (type == 1) g_CoverPath = CT2A(tfilename);
+			if (type == 2) g_BookPath = CT2A(tfilename);
 
 			CFile tfile;
 			if (tfile.Open(tfilename, CFile::modeWrite | CFile::modeCreate))
 			{
-				unsigned char sbuf[300];
+				unsigned char sbuf[300];//sz must be multiple of 3
 				ZeroMemory(sbuf, 300);
-				unsigned char tbuf[400];
+				unsigned char tbuf[400];//sz must be multiple of 4
 				ZeroMemory(tbuf, 400);
 
 				UINT nread = 0;
@@ -465,12 +469,25 @@ BOOL CShowCase::B64Encode(CString sfilename, CString id, int type)
 
 void CShowCase::OnBnClickedButtonScUpload()
 {
+	if (g_Success)
+	{
+		AfxMessageBox(_T("You have already uploaded the EBook and data successfully!\r\nVisit the site to view it."));
+		return;
+	}
+
 	GetDlgItemText(IDC_EDIT_SC_PLINK, m_Data[12]);
 	GetDlgItemText(IDC_EDIT_SC_TAGS, m_Data[13]);
 	GetDlgItemText(IDC_EDIT_SC_COMMENTS, m_Data[14]);
 
+	CButton *chk = (CButton*)GetDlgItem(IDC_CHECK_TERMS);
+	if (!chk->GetCheck())
+	{
+		AfxMessageBox(_T("You need to agree to the T&C by checking the check box!"));
+		return;
+	}
+
 	m_Result = _T("No Connection");
-	m_Success = FALSE;
+	g_Success = FALSE;
 
 	CString formData;// = _T("b2bver=1.0.0&b2bid=12345678");
 	CString params[] = {
@@ -505,14 +522,11 @@ void CShowCase::OnBnClickedButtonScUpload()
 		return;
 	}
 
-	g_CoverPath = CT2A(m_Data[17] + _T("Raw\\") + m_Data[1] + _T(".jpg.txt"));
-
-	g_BookPath = CT2A(m_Data[17] + m_Data[1] + _T(".epub.txt"));
 
 	m_ProgCtrl.SetPos(10);
 
 	wstring stra(formData);
-	g_Form = stra;
+	g_Form = stra;//not working when passed via thread
 	CWinThread* hTh1 = AfxBeginThread(B2BDataProc, (LPVOID)stra.c_str()/*formData.GetBuffer()*//*B2BDataProc receives this as param */, THREAD_PRIORITY_NORMAL);
 
 	//m_Success =	m_Result == _T("Success");
@@ -535,8 +549,11 @@ BOOL CShowCase::OnInitDialog()
 	SetDlgItemText(IDC_EDIT_SC_COMMENTS, m_Data[14]);
 
 	m_ProgCtrl.SetRange(0, 100);
+	m_Removed = FALSE;
 
-	CString attribs[] = { _T("Name"),
+	CString attribs[] = { 
+	_T("ID"),
+	_T("Name"),
 	_T("Author"),
 	_T("Url"),
 	_T("Description"),
@@ -548,10 +565,10 @@ BOOL CShowCase::OnInitDialog()
 	m_SCListCtrl.InsertColumn(0, _T("Attribute"), LVCFMT_LEFT, 100);
 	m_SCListCtrl.InsertColumn(1, _T("Value"), LVCFMT_LEFT, 350);
 
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < 9; i++)
 	{
 		m_SCListCtrl.InsertItem(i, attribs[i]);
-		m_SCListCtrl.SetItemText(i, 1, m_Data[i+2]);
+		m_SCListCtrl.SetItemText(i, 1, m_Data[i+1]);
 	}
 
 	m_SCListCtrl.SetExtendedStyle(m_SCListCtrl.GetExtendedStyle() | LVS_EX_GRIDLINES);
@@ -573,6 +590,16 @@ void CShowCase::OnBnClickedOk()
 
 void CShowCase::OnBnClickedButtonScRem()
 {
-	// TODO: Add your control notification handler code here
+	if (m_Data[11].IsEmpty())
+	{
+		AfxMessageBox(_T("Error: Password not found.\r\nPlease contact the webmaster for manual deletion."));
+		ShellExecute(NULL, _T("open"), _T("https://b2b.oormi.in"), NULL, NULL, SW_SHOWNORMAL);
+		return;
+	}
+
+	ShellExecute(NULL, _T("open"), _T("https://b2b.oormi.in/remove.php?b2blic=") + m_Data[11] + _T("&b2bid=") + m_Data[1], NULL, NULL, SW_SHOWNORMAL);
+	m_Removed = TRUE;
+	g_Success = FALSE;
+
 }
 

@@ -65,7 +65,7 @@ public:
 	CBlog m_Blog;
 	
 	CString m_BlogPageRaw, m_BlogPagePreview, m_Status, m_Index, m_B2BRef, m_B2BRefPre;
-	CString /*m_UserPath,*/ m_BlankPath, m_ProjectPath, m_ProjectName, m_RawDataPath, m_BookFile;
+	CString /*m_UserPath,*/ m_BlankPath, m_ProjectPath, m_ProjectName, m_RawDataPath, m_BookFile, m_B2BFile;
 
 	CString m_Titles[MAXARTICLES];
 	CString m_TitleUrls[MAXARTICLES];
@@ -81,7 +81,7 @@ public:
 	CString m_BFont, m_TFont;
 
 	CString m_SCEntries[3];
-	CString m_SCID;
+	CString m_SCID, m_SCPass;
 
 
 	BOOL Fetch(CString url);
@@ -115,6 +115,7 @@ public:
 	void SaveSettings();
 	void LoadSettings();
 	CString GetSCID();
+	void SaveCoverThumb();
 
 	afx_msg void OnButtonFetch();
 	afx_msg void OnButtonSaveepub();

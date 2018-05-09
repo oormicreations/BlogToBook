@@ -73,10 +73,10 @@
 #define IDC_BUTTON_SC_VISIT             1009
 #define IDC_SC_TCLINK                   1010
 #define IDC_CHECK1                      1011
+#define IDC_CHECK_TERMS                 1011
 #define IDC_BUTTON_SC_UPLOAD            1012
 #define IDC_PROGRESS_SC                 1013
 #define IDC_BUTTON_SC_REM               1014
-#define IDC_LIST1                       1019
 #define IDC_LIST_SCDATA                 1019
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_BUTTON_FETCH                 32771

@@ -34,6 +34,8 @@
 #define new DEBUG_NEW
 #endif
 
+extern BOOL g_Success;
+
 // CBlogToBookDoc
 
 IMPLEMENT_DYNCREATE(CBlogToBookDoc, CDocument)
@@ -102,6 +104,7 @@ CBlogToBookDoc::CBlogToBookDoc()
 	}
 
 	//ReportUsage();//test
+	srand((UINT)time(0));
 
 }
 
@@ -190,7 +193,7 @@ void CBlogToBookDoc::Serialize(CArchive& ar)
 			<< m_Blog.m_BlogAuthor << m_Blog.m_BlogDesc << m_Blog.m_BlogISBN << m_Blog.m_BlogLang << m_Blog.m_BlogModDate 
 			<< m_Blog.m_BlogName << m_Blog.m_BlogPlublisher << m_Blog.m_BlogPubDate << m_Blog.m_BlogUrl
 			<< m_Blog.m_IncludeB2BRef << m_BFontSz << m_TFontSz << m_BFont << m_TFont
-			<< m_SCID << m_BookFile;
+			<< m_SCID << m_SCPass << m_BookFile;
 	}
 	else
 	{
@@ -200,7 +203,7 @@ void CBlogToBookDoc::Serialize(CArchive& ar)
 			>> m_Blog.m_BlogAuthor >> m_Blog.m_BlogDesc >> m_Blog.m_BlogISBN >> m_Blog.m_BlogLang >> m_Blog.m_BlogModDate
 			>> m_Blog.m_BlogName >> m_Blog.m_BlogPlublisher >> m_Blog.m_BlogPubDate >> m_Blog.m_BlogUrl
 			>> m_Blog.m_IncludeB2BRef >> m_BFontSz >> m_TFontSz >> m_BFont >> m_TFont
-			>> m_SCID >> m_BookFile;
+			>> m_SCID >> m_SCPass >> m_BookFile;
 	}
 }
 
@@ -898,6 +901,7 @@ void CBlogToBookDoc::OnButtonSaveepub()
 
 	//Done!
 	ShowCaption(_T("Your Ebook was saved! Click Show Project Folder button to view the contents."));
+	OnSaveDocument(m_B2BFile);
 }
 
 BOOL CBlogToBookDoc::IsFileLocked(CString path)
@@ -1121,10 +1125,10 @@ void CBlogToBookDoc::OnButtonShowfolder()
 
 CString CBlogToBookDoc::GetSCID()
 {
-	srand((UINT)time(0));
-	m_SCID.Format(_T("%04d%04d"), rand()%9999, rand()%9999);
+	CString id;
+	id.Format(_T("%04d%04d"), rand()%9999, rand()%9999); //srand in constructor
 
-	return m_SCID;
+	return id;
 }
 
 void CBlogToBookDoc::OnButtonShowcase()
@@ -1142,14 +1146,22 @@ void CBlogToBookDoc::OnButtonShowcase()
 		{
 			OnButtonSaveepub();
 		}
+
 	}
+	if (m_B2BFile.IsEmpty())
+	{
+		AfxMessageBox(_T("You need to save your project before you can showcase the book."));
+		return;
+	}
+
 
 	if (!m_SCID.IsEmpty())
 	{
-		int res = AfxMessageBox(_T("This Ebook was already showcased.\r\nWould you like to view it now?"), MB_YESNO);
+		int res = AfxMessageBox(_T("This Ebook was already showcased.\r\nClick Yes to view it now, No to proceed."), MB_YESNO);
 		if (res == IDYES) 
 		{
 			ShellExecute(NULL, _T("open"), _T("https://b2b.oormi.in/showbook.php?b2bid=") + m_SCID, NULL, NULL, SW_SHOWNORMAL);
+			return;
 		}
 	}
 
@@ -1163,9 +1175,14 @@ void CBlogToBookDoc::OnButtonShowcase()
 	CShowCase scDlg;
 
 	//init
-	m_SCID = _T("");
+	if (m_SCID.IsEmpty())
+	{
+		m_SCID = GetSCID();
+		m_SCPass = GetSCID();//password for deleting showcased book
+	}
+
 	scDlg.m_Data[0].Format(_T("%d"), m_B2BVersion);
-	scDlg.m_Data[1] = GetSCID();
+	scDlg.m_Data[1] = m_SCID;
 	scDlg.m_Data[2] = m_Blog.m_BlogName;
 	scDlg.m_Data[3] = m_Blog.m_BlogAuthor;
 	scDlg.m_Data[4] = m_Blog.m_BlogUrl;
@@ -1174,8 +1191,8 @@ void CBlogToBookDoc::OnButtonShowcase()
 	scDlg.m_Data[7] = m_Blog.m_BlogPubDate;
 	scDlg.m_Data[8] = m_Blog.m_BlogLang;
 	scDlg.m_Data[9] = m_Blog.m_BlogISBN;
-	scDlg.m_Data[10] = m_RawDataPath + m_Blog.m_CoverPath;
-	scDlg.m_Data[11] = m_Blog.m_Copyright;
+	scDlg.m_Data[10] = m_RawDataPath + _T("book_cover_small.jpg");
+	scDlg.m_Data[11] = m_SCPass; 
 	scDlg.m_Data[12] = m_SCEntries[0];
 	scDlg.m_Data[13] = m_SCEntries[1];
 	scDlg.m_Data[14] = m_SCEntries[2];
@@ -1191,14 +1208,25 @@ void CBlogToBookDoc::OnButtonShowcase()
 	m_SCEntries[1] = scDlg.m_Data[13];
 	m_SCEntries[2] = scDlg.m_Data[14];
 
-	if (scDlg.m_Success)
+	if (g_Success)
 	{
 		ShowCaption(_T("Your EBook was showcased successfully!"));
+		OnSaveDocument(m_B2BFile);
 	}
 	else
 	{
 		m_SCID = _T("");
+		m_SCPass = _T("");
 		ShowCaption(_T("There was an error showcasing your EBook. Check your internet connection and try again."));
+	}
+
+	if (scDlg.m_Removed)
+	{
+		m_SCID = _T("");
+		m_SCPass = _T("");
+		ShowCaption(_T("EBook was removed from the online showcase."));
+		OnSaveDocument(m_B2BFile);
+
 	}
 }
 
@@ -1274,6 +1302,7 @@ void CBlogToBookDoc::OnButtonCover()
 		{
 			ShowCaption(_T("Check Render for cover preview."));
 			UpdateAllViews(NULL);
+			SaveCoverThumb();
 		}
 		else
 		{
@@ -1287,6 +1316,58 @@ void CBlogToBookDoc::OnButtonCover()
 	}
 
 }
+
+void CBlogToBookDoc::SaveCoverThumb()
+{
+	CImage image;
+	CString imagePath = m_RawDataPath + _T("book_cover.jpg");
+	HRESULT hr = image.Load(imagePath);
+	if (hr == S_OK)
+	{
+		int h = image.GetHeight();
+		int w = image.GetWidth();
+
+		double ratio = (double)300 / (double)h;
+		if (w > h) ratio = (double)228 / (double)w;
+
+		int iNewWidth = (int)(ratio*(double)w);
+		int iNewHeight = (int)(ratio*(double)h);
+
+		CFrameWnd * fwnd = (CFrameWnd *)AfxGetMainWnd();
+		CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
+		if (view != NULL)
+		{
+
+			CDC *screenDC = view->GetDC();
+
+			CDC *pMDC = new CDC;
+			pMDC->CreateCompatibleDC(screenDC);
+
+			CBitmap *pb = new CBitmap;
+			pb->CreateCompatibleBitmap(screenDC, iNewWidth, iNewHeight);
+
+			CBitmap *pob = pMDC->SelectObject(pb);
+			SetStretchBltMode(pMDC->GetSafeHdc(), COLORONCOLOR);
+
+			image.StretchBlt(pMDC->m_hDC, 0, 0, iNewWidth, iNewHeight, 0, 0, image.GetWidth(), image.GetHeight(), SRCCOPY);
+			pMDC->SelectObject(pob);
+
+			CImage new_image;
+			new_image.Attach((HBITMAP)(*pb));
+			new_image.Save(m_RawDataPath + _T("book_cover_small.jpg"));
+
+			new_image.Detach();
+			view->ReleaseDC(screenDC);
+			pMDC->DeleteDC();
+			pb->DeleteObject();
+			new_image.Destroy();
+			delete pb;
+			delete pMDC;
+		}
+	}
+
+}
+
 
 void CBlogToBookDoc::OnButtonLic()
 {
@@ -1412,7 +1493,7 @@ BOOL CBlogToBookDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	}
 	else ShowCaption(_T("Error loading Project: ") + m_ProjectName);
 
-	//SetArticleList();
+	m_B2BFile = lpszPathName;
 	return TRUE;
 }
 
@@ -1438,6 +1519,7 @@ BOOL CBlogToBookDoc::OnSaveDocument(LPCTSTR lpszPathName)
 			return FALSE;
 		}
 
+		m_B2BFile = lpszPathName;
 		return TRUE;
 
 	}
@@ -1555,7 +1637,7 @@ void CBlogToBookDoc::OnButtonUpdate()
 	ShowCaption(_T("Checking for updates ..."));
 	m_BlogPageRaw = _T("");
 
-	if (Fetch(_T("https://oormi.in/software/updateb2b.txt")))
+	if (Fetch(_T("https://oormi.in/b2b/updateb2b.txt")))
 	{
 		if (!m_BlogPageRaw.IsEmpty())
 		{
@@ -1565,7 +1647,7 @@ void CBlogToBookDoc::OnButtonUpdate()
 			AfxExtractSubString(ver2, m_BlogPageRaw, 1, '|'); //minor ver num
 			AfxExtractSubString(durl, m_BlogPageRaw, 2, '|'); //downlaod url
 
-			int oldver = (int)m_B2BVersion*10-1;
+			int oldver = (int)m_B2BVersion*10;
 			int newver = _ttoi(ver1)*10 + _ttoi(ver2);
 
 			if (newver > oldver)

@@ -3,7 +3,6 @@ using namespace std;
 #include <string>
 #include "afxcmn.h"
 
-
 // CShowCase dialog
 
 class CShowCase : public CDialog
@@ -16,7 +15,7 @@ public:
 
 // Dialog Data
 	CString /*m_PrintLink, m_Tags, m_Comments,*/ m_Result;
-	BOOL m_Agree, m_Success;
+	BOOL m_Agree, m_Success, m_Removed;
 	CString m_Data[20];
 	int m_DataCount;
 	CProgressCtrl m_ProgCtrl;
