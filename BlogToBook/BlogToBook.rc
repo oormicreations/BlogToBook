@@ -221,16 +221,17 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 173, 122
+IDD_ABOUTBOX DIALOGEX 0, 0, 165, 122
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About BlogToBook"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
-    LTEXT           "BlogToBook, Version 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
-    LTEXT           "By Oormi Creations https://oormi.in Copyright (C) 2018",IDC_STATIC,33,40,80,31
-    DEFPUSHBUTTON   "OK",IDOK,116,101,50,14,WS_GROUP
-    LTEXT           "EPUB template by Jason Hibbs http://jasonhibbs.co.uk",IDC_STATIC,35,78,76,37
+    LTEXT           "BlogToBook, Version 1.0.0",IDC_STATIC,44,21,114,8,SS_NOPREFIX
+    LTEXT           "By Oormi Creations",IDC_STATIC,44,41,68,12
+    DEFPUSHBUTTON   "OK",IDOK,108,101,50,14,WS_GROUP
+    CONTROL         "https://oormi.in",IDC_MFCLINK1,"MfcLink",WS_TABSTOP,43,55,60,14
+    LTEXT           "Copyright (C) 2018",IDC_STATIC,43,76,62,8
 END
 
 
@@ -254,15 +255,15 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040904B0"
+        BLOCK "040904b0"
         BEGIN
-            VALUE "CompanyName", "TODO: <Company name>"
+            VALUE "CompanyName", "Oormi Creations"
             VALUE "FileDescription", "BlogToBook"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "BlogToBook.exe"
-            VALUE "LegalCopyright", "TODO: (c) <Company name>.  All rights reserved."
+            VALUE "LegalCopyright", "(c) Oormi Creations.  All rights reserved."
             VALUE "OriginalFilename", "BlogToBook.exe"
-            VALUE "ProductName", "TODO: <Product name>"
+            VALUE "ProductName", "Blog To Book"
             VALUE "ProductVersion", "1.0.0.1"
         END
     END
@@ -284,7 +285,7 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 166
+        RIGHTMARGIN, 158
         TOPMARGIN, 7
         BOTTOMMARGIN, 115
     END
@@ -307,6 +308,29 @@ IDR_RIBBON              RT_RIBBON_XML           "res\\ribbon.mfcribbon-ms"
 
 IDD_ABOUTBOX AFX_DIALOG_LAYOUT
 BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_ABOUTBOX DLGINIT
+BEGIN
+    IDC_MFCLINK1, 0x37c, 188, 0
+0x4d3c, 0x4346, 0x694c, 0x6b6e, 0x555f, 0x6c72, 0x683e, 0x7474, 0x7370, 
+0x2f3a, 0x6f2f, 0x726f, 0x696d, 0x692e, 0x3c6e, 0x4d2f, 0x4346, 0x694c, 
+0x6b6e, 0x555f, 0x6c72, 0x3c3e, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 0x7255, 
+0x506c, 0x6572, 0x6966, 0x3e78, 0x2f3c, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 
+0x7255, 0x506c, 0x6572, 0x6966, 0x3e78, 0x4d3c, 0x4346, 0x694c, 0x6b6e, 
+0x545f, 0x6f6f, 0x746c, 0x7069, 0x4f3e, 0x726f, 0x696d, 0x4320, 0x6572, 
+0x7461, 0x6f69, 0x736e, 0x2f3c, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 0x6f54, 
+0x6c6f, 0x6974, 0x3e70, 0x4d3c, 0x4346, 0x694c, 0x6b6e, 0x465f, 0x6c75, 
+0x546c, 0x7865, 0x5474, 0x6f6f, 0x746c, 0x7069, 0x463e, 0x4c41, 0x4553, 
+0x2f3c, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 0x7546, 0x6c6c, 0x6554, 0x7478, 
+0x6f54, 0x6c6f, 0x6974, 0x3e70, 
     0
 END
 

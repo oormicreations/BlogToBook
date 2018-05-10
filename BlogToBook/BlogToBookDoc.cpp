@@ -1126,6 +1126,7 @@ BOOL CBlogToBookDoc::SaveIndex()
 
 void CBlogToBookDoc::OnButtonShowfolder()
 {
+	if (!m_IsProjectLoaded) return;
 	ShellExecute(NULL, _T("open"), m_ProjectPath, NULL, NULL, SW_SHOW);
 }
 
@@ -1281,6 +1282,8 @@ void CBlogToBookDoc::OnEditBookIsbn()
 
 void CBlogToBookDoc::OnButtonCover()
 {
+	if (!m_IsProjectLoaded) return;
+
 	//opens output file select dialog
 
 	CFileDialog DataFileOpenDialog(true, _T("b2b"), _T(""), OFN_HIDEREADONLY, _T("Picture Files (*.jpg)|*.jpg|(*.jpeg)|*.jpeg|(*.png)|*.png|All Files (*.*)|*.*||"));
@@ -1406,6 +1409,8 @@ void CBlogToBookDoc::OnButtonEndpage()
 
 void CBlogToBookDoc::EditAttributes(int arNum)
 {
+	if (!m_IsProjectLoaded) return;
+
 	CAttribDlg dialog;
 	CString sn[] = { _T("Cover"), _T("Copyright"), _T("Dedication"), _T("Preface"), _T("End Page") };
 
