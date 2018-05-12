@@ -14,6 +14,8 @@
 
 #pragma once
 #define MAXDISPPAGES 1000
+#define FETCH_THREAD_NOTIFY (WM_APP + 2)
+
 
 class CBlogToBookView : public CView
 {
@@ -98,6 +100,8 @@ public:
 	afx_msg void OnComboFontTitle();
 	afx_msg void OnComboFontBody();
 	afx_msg void OnButtonResetFont();
+	afx_msg LRESULT OnFetchThreadNotify(WPARAM, LPARAM);
+
 };
 
 #ifndef _DEBUG  // debug version in BlogToBookView.cpp

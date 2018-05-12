@@ -1,6 +1,6 @@
 #pragma once
 #include "Article.h"
-#define MAXARTICLES 50
+#define MAXARTICLES 200
 #define MAXEXTRAPAGES 4
 
 class CBlog

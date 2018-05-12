@@ -73,7 +73,7 @@ public:
 	
 	BOOL m_IsFetched, m_ListEdited, m_bListChanged, m_IsProjectLoaded, m_IsCancelled, m_IsInstalled;
 	
-	UINT m_TitleCount, m_ChapterCount;
+	UINT m_TitleCount, m_ChapterCount, m_TitlesMonthCount;
 	int m_ChapterList[MAXARTICLES];
 	int m_ChapterNumDisp[MAXARTICLES];
 	
@@ -116,6 +116,10 @@ public:
 	void LoadSettings();
 	CString GetSCID();
 	HRESULT SaveCoverThumb();
+	BOOL ClearChache();
+	BOOL SaveDoc(CString b2bfile);
+
+
 
 	afx_msg void OnButtonFetch();
 	afx_msg void OnButtonSaveepub();
@@ -149,3 +153,13 @@ public:
 	afx_msg void OnButtonHelp();
 	afx_msg void OnButtonUpdate();
 };
+
+class CStdioFileWithClose : public CStdioFile
+  {
+  public:
+    CStdioFileWithClose(FILE *pOpenStream)
+      : CStdioFile(pOpenStream)
+    {
+      m_bCloseOnDelete = TRUE;
+    }
+  };

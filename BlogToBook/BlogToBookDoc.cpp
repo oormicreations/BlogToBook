@@ -34,7 +34,107 @@
 #define new DEBUG_NEW
 #endif
 
+
+
 extern BOOL g_Success;
+
+struct FetchThreadParam
+{
+	CBlogToBookDoc* tpDoc;
+	HWND tphWndView;
+};
+
+UINT FetchProc(LPVOID param)
+{
+	FetchThreadParam *pp = (FetchThreadParam*)param;
+	CBlogToBookDoc *pDoc = (CBlogToBookDoc*)pp->tpDoc;
+
+	int year = pDoc->m_Blog.m_YearStart;
+	int month = pDoc->m_Blog.m_MonthStart;
+
+	for (int i = 0; i < MAXMONTHS; i++)
+	{
+		CString str;
+		str.Format(_T("%s/%d/%02d"), pDoc->m_Blog.m_BlogUrl, year, month);
+
+		for (int i = 0; i < MAXARTICLES; i++)
+		{
+			pDoc->m_TitleDates[i] = _T("");
+			pDoc->m_Titles[i] = _T("");
+			pDoc->m_TitleUrls[i] = _T("");
+		}
+
+		if (pDoc->Fetch(str))
+		{
+			if (pDoc->ParseTitles()) pDoc->SavePages();
+
+			if (month < 12) month++;
+			else
+			{
+				month = 1;
+				year++;
+			}
+			if (year > pDoc->m_Blog.m_YearEnd) break;
+			if (year == pDoc->m_Blog.m_YearEnd)
+			{
+				if (month > pDoc->m_Blog.m_MonthEnd) break;
+			}
+
+			TRACE(_T("-----------------------y=%d,m=%d\r\n"), year, month);
+			::SendMessage(pp->tphWndView, FETCH_THREAD_NOTIFY, year * 100 + month, pDoc->m_TitleCount - MAXEXTRAPAGES + 1);
+			Sleep(1000);
+		}
+		else
+		{
+			::SendMessage(pp->tphWndView, FETCH_THREAD_NOTIFY, 0, 1);
+		}
+
+	}
+
+
+	if (pDoc->m_TitleCount < MAXEXTRAPAGES + 1)
+	{
+		::SendMessage(pp->tphWndView, FETCH_THREAD_NOTIFY, 0, 1);
+	}
+	else
+	{
+		//create end page
+		CString str;
+		CString sp[] = { pDoc->m_Blog.m_CoverPath, pDoc->m_Blog.m_Copyright, pDoc->m_Blog.m_Dedication, pDoc->m_Blog.m_Preface, pDoc->m_Blog.m_EndPage };
+		CString sn[] = { _T("Cover"), _T("Copyright"), _T("Dedication"), _T("Preface"), _T("End Page") };
+		CString st[] = { pDoc->m_Blog.m_CoverTitle, pDoc->m_Blog.m_CopyrightTitle, pDoc->m_Blog.m_DedicationTitle, pDoc->m_Blog.m_PrefaceTitle, pDoc->m_Blog.m_EndPageTitle };
+
+		int i = pDoc->m_TitleCount++;
+		str.Format(_T("pre%03d.txt"), i);
+		if (!pDoc->SaveFile(str, pDoc->m_RawDataPath, sp[MAXEXTRAPAGES]))return 1;
+
+		sp[MAXEXTRAPAGES].Replace(_T("\r\n"), _T("<br />\r\n"));
+		str.Format(_T("raw%03d.txt"), i);
+		if (!pDoc->SaveFile(str, pDoc->m_RawDataPath, _T("<p class=\"chap\" >b2bchaptername</p><br />") + sp[MAXEXTRAPAGES]))return 1;
+
+		str.Format(_T("|raw%03d.txt|pre%03d.txt\r\n"), i, i);
+		pDoc->m_Index = pDoc->m_Index + _T("Enabled|None|") + st[MAXEXTRAPAGES] + _T("|") + sn[MAXEXTRAPAGES] + str;
+
+		//save index
+		if (!pDoc->SaveFile(_T("index.txt"), pDoc->m_RawDataPath, pDoc->m_Index))return 1;
+
+		pDoc->SetAllArticles();
+		pDoc->SetModifiedFlag(TRUE);
+		//pDoc->m_Blog.SetBookInfo();//sendmess
+		::SendMessage(pp->tphWndView, FETCH_THREAD_NOTIFY, 0, 2);
+
+
+		pDoc->m_IsFetched = TRUE;
+		pDoc->m_bListChanged = TRUE;
+		pDoc->m_Blog.m_ArticleCount = pDoc->m_TitleCount;
+	}
+
+	//sendmessage to update all views
+	::SendMessage(pp->tphWndView, FETCH_THREAD_NOTIFY, 0, 3);
+
+	return 0;
+}
+
 
 // CBlogToBookDoc
 
@@ -67,6 +167,7 @@ BEGIN_MESSAGE_MAP(CBlogToBookDoc, CDocument)
 	ON_COMMAND(ID_BUTTON_HELP, &CBlogToBookDoc::OnButtonHelp)
 	ON_COMMAND(ID_BUTTON_UPDATE, &CBlogToBookDoc::OnButtonUpdate)
 END_MESSAGE_MAP()
+
 
 
 // CBlogToBookDoc construction/destruction
@@ -106,6 +207,8 @@ CBlogToBookDoc::CBlogToBookDoc()
 	//ReportUsage();//test
 	srand((UINT)time(0));
 
+	//BuildBook();//test
+
 }
 
 CBlogToBookDoc::~CBlogToBookDoc()
@@ -134,6 +237,8 @@ BOOL CBlogToBookDoc::OnNewDocument()
 		}
 
 		Clear();
+		m_Blog.SetBlogInfo();
+		m_Blog.SetBookInfo();
 
 		SetModifiedFlag(TRUE);
 
@@ -142,6 +247,7 @@ BOOL CBlogToBookDoc::OnNewDocument()
 	
 		m_IsProjectLoaded = TRUE;
 		m_IsCancelled = FALSE;
+		
 	}
 	else
 	{
@@ -176,6 +282,7 @@ void CBlogToBookDoc::Clear()
 	CFrameWnd * fwnd = (CFrameWnd *)AfxGetMainWnd();
 	CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
 	if (view != NULL) view->m_ArList.DeleteAllItems();
+
 
 
 }
@@ -281,9 +388,9 @@ void CBlogToBookDoc::Dump(CDumpContext& dc) const
 
 BOOL CBlogToBookDoc::Fetch(CString url)
 {
+	m_BlogPageRaw = _T("");
 	DWORD flags;
 	BOOL connected = InternetGetConnectedState(&flags, NULL);
-
 	if (!connected)
 	{
 		return FALSE;
@@ -393,49 +500,105 @@ BOOL CBlogToBookDoc::ParseTitles()
 		i++;
 	}
 
+	m_TitlesMonthCount = i;
 	return hasArticles;
 }
 
 CString CBlogToBookDoc::LoadPage(CString fpath)
 {
-	CFile file;
-	BOOL res = file.Open(fpath, CFile::modeRead);
-	if (!res)
-	{
-		AfxMessageBox(fpath + _T("\r\n\r\nError: This file could not be loaded."));
-		return _T("");
-	}
+	  // Open the file with the specified encoding
+	FILE *fStream;
+	errno_t e = _tfopen_s(&fStream, fpath,	_T("rt,ccs=UTF-8"));
+	if (e != 0) return _T(""); // failed..
+	CStdioFile f(fStream);  // open the file from this stream
 
-	UINT len = (UINT)file.GetLength();
-	CHAR *buf = new CHAR [len+1];
+	UINT len = f.GetLength() * sizeof(TCHAR) ;
+	TCHAR *buf = new TCHAR [len+1];
 	ZeroMemory(buf, len + 1);
 
-	file.Read(buf, len);
-	file.Close();
+	f.Read(buf, len);
+	//f.ReadString(str);
+	f.Close();
 
 	CString str(buf);
-	delete[] buf;
+
+	delete buf;
 	m_BlogPageRaw = str;
-
-
 	return str;
+
+	//CFile file;
+	//BOOL res = file.Open(fpath, CFile::modeRead);
+	//if (!res)
+	//{
+	//	AfxMessageBox(fpath + _T("\r\n\r\nError: This file could not be loaded."));
+	//	return _T("");
+	//}
+
+	//UINT len = (UINT)file.GetLength();
+	//CHAR *buf = new CHAR [len+1];
+	//ZeroMemory(buf, len + 1);
+
+	//file.Read(buf, len);
+	//file.Close();
+
+	//CString str(buf);
+
+	//CT2CA szr(str, CP_UTF8);
+	////CString tstr(CA2CT(str, CP_UTF8));
+	//m_BlogPageRaw = szr;
+
+	//delete[] buf;
+
+	//return str;
 }
 
 BOOL CBlogToBookDoc::BuildBook()
 {
-	//LoadPage(_T("G:\\VS2015 Projects\\BlogToBook\\BlogToBook\\memories01.txt"));
+	//CString str = LoadPage(_T("G:\\VS2015 Projects\\BlogToBook\\Resources and backups\\path2.html"));
+	//SaveFile(_T("p2.txt"), _T("G:\\VS2015 Projects\\BlogToBook\\Resources and backups\\"), str);
+	//return 0;
 
 	CString bstart = _T("<div class=\'post-body entry-content");
 	CString bend = _T("</div>");
 	int len = m_BlogPageRaw.GetLength();
 
 	int n1 = m_BlogPageRaw.Find(bstart);
-	if (n1>=0)
+	if (n1 >= 0)
 	{
 		m_BlogPageRaw =  m_BlogPageRaw.Right(len - n1);
-		int n2 = m_BlogPageRaw.Find(bend);
-		m_BlogPageRaw = m_BlogPageRaw.Left(n2);
 
+		//find nested divs
+		int skip = 0;
+
+		bstart = _T("<div");
+		bend = _T("</div>");
+		int n4 = 0;
+
+		while (TRUE)
+		{
+			int n3 = m_BlogPageRaw.Find(bend, skip + 1);
+			if (n3 >= 0)
+			{
+				n4 = m_BlogPageRaw.Find(bstart, n4 + 1);
+				if (n4 > n3)break;
+
+				skip = n3;
+				if (n4 >= 0)
+				{
+					m_BlogPageRaw.Insert(n4 + 1, _T("x"));
+					skip++;
+				}
+			}
+			else break;
+		}
+
+		// </div> of content
+		int n2 = m_BlogPageRaw.Find(bend, skip+1);
+		m_BlogPageRaw = m_BlogPageRaw.Left(n2);
+	}
+	else
+	{
+		return FALSE;//content not found
 	}
 
 	//remove tables
@@ -532,7 +695,7 @@ BOOL CBlogToBookDoc::SavePages()
 	int pSaved = 0;
 	CString fname, prename;
 
-	for (int i = 0; i < MAXARTICLES; i++)
+	for (int i = m_TitlesMonthCount-1; i >= 0; i--)//reverse order for ascending date
 	{
 		if (!m_TitleUrls[i].IsEmpty())
 		{
@@ -557,7 +720,7 @@ BOOL CBlogToBookDoc::SavePages()
 			}
 
 			m_TitleCount++;
-			ShowCaption(_T("Fetching... ") + m_Titles[i]);
+			//ShowCaption(_T("Fetching... ") + m_Titles[i]);
 		}
 	}
 
@@ -566,18 +729,37 @@ BOOL CBlogToBookDoc::SavePages()
 
 BOOL CBlogToBookDoc::SaveFile(CString fname, CString path, CString data)
 {
+	// Open the file with the specified encoding
+	FILE *fStream;
+	errno_t e = _tfopen_s(&fStream, path + fname,	_T("wt,ccs=UTF-8"));
+	if (e != 0) return FALSE; // failed..
+	CStdioFileWithClose f(fStream);  // open the file from this stream
 
-	CFile pageFile;
-	BOOL res = pageFile.Open(path + fname, CFile::modeCreate | CFile::modeWrite);
-	if (!res)
-	{
-		AfxMessageBox(path + fname + _T("\r\n\r\nError: This file could not be saved."));
-		return FALSE;
-	}
+	data.Replace(_T("\r\n"), _T("\n"));
+	f.Write(data.GetBuffer(), data.GetLength() * sizeof(TCHAR));
+	//f.WriteString(data);
+	f.Close();
 
-	CT2CA outputString(data, CP_UTF8);
-	pageFile.Write(outputString, ::strlen(outputString));
-	pageFile.Close();
+	//CFile pageFile;
+	//BOOL res = pageFile.Open(path + fname, CFile::modeCreate | CFile::modeWrite);
+	//if (!res)
+	//{
+	//	AfxMessageBox(path + fname + _T("\r\n\r\nError: This file could not be saved."));
+	//	return FALSE;
+	//}
+	//char BOM[3] = { 0xEF, 0xBB, 0xBF };
+	//pageFile.Write(BOM, 3);
+	//
+	//int count = WideCharToMultiByte(CP_UTF8, NULL, data, -1, NULL, 0, NULL, NULL);
+
+	//char * outputString = (char*)malloc(count+1);
+	//ZeroMemory(outputString, count+1);
+
+	//count = WideCharToMultiByte(CP_UTF8, NULL, data, -1, outputString, count, NULL, NULL);
+
+	////CT2CA outputString(data, CP_UTF8);
+	//pageFile.Write(outputString, ::strlen(outputString));
+	//pageFile.Close();
 
 	return TRUE;
 }
@@ -585,10 +767,26 @@ BOOL CBlogToBookDoc::SaveFile(CString fname, CString path, CString data)
 
 void CBlogToBookDoc::OnButtonFetch()
 {
-	if ((m_IsProjectLoaded) && (!m_Index.IsEmpty()))
+	if (!m_IsProjectLoaded)
 	{
 		OnNewDocument();
 		return;
+	}
+
+	if (!m_Index.IsEmpty())
+	{
+		int res = AfxMessageBox(_T("Overwrite current data?"), MB_YESNO);
+		if (res == IDNO)
+		{
+			return;
+		}
+		else
+		{
+			m_Blog.Clear();
+			m_bListChanged = TRUE;
+			Clear();
+			UpdateAllViews(NULL);
+		}
 	}
 
 	if (m_ProjectPath.IsEmpty())
@@ -610,8 +808,10 @@ void CBlogToBookDoc::OnButtonFetch()
 		return;
 	}
 
+
 	//set paths
 	SetProjectPaths();
+
 
 	//copy template
 	SHCopy(m_BlankPath + _T("*"), m_ProjectPath);
@@ -638,6 +838,11 @@ void CBlogToBookDoc::OnButtonFetch()
 		str.Format(_T("|raw%03d.txt|pre%03d.txt\r\n"), i, i);
 		m_Index = m_Index + _T("Enabled|None|") + st[i] + _T("|") + sn[i] + str;
 	}
+	//save
+	SaveDoc(m_ProjectPath+m_ProjectName);
+
+	//clear wininet cache
+	//ClearChache();
 
 	//get blog data
 	ShowCaption(_T("Connecting..."));
@@ -647,7 +852,20 @@ void CBlogToBookDoc::OnButtonFetch()
 
 	m_TitleCount = MAXEXTRAPAGES;
 
-	for (int i = 0; i < MAXMONTHS; i++)
+	FetchThreadParam* param = new FetchThreadParam;
+	param->tpDoc = this;
+
+	CFrameWnd * fwnd = (CFrameWnd *)AfxGetMainWnd();
+	CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
+	if (view == NULL)return;
+
+	param->tphWndView = view->m_hWnd;//always pass the handle, not a "this" or CWnd*
+
+	CWinThread* hTh1 = AfxBeginThread(FetchProc, param);
+
+	return;////////////////////////////////////////////////////////////////////////////////////////////////
+
+/*	for (int i = 0; i < MAXMONTHS; i++)
 	{
 		str.Format(_T("%s/%d/%02d"), m_Blog.m_BlogUrl, year, month);
 
@@ -720,7 +938,7 @@ void CBlogToBookDoc::OnButtonFetch()
 	}
 
 	UpdateAllViews(NULL);
-
+*/
 }
 
 
@@ -1517,13 +1735,10 @@ BOOL CBlogToBookDoc::OnOpenDocument(LPCTSTR lpszPathName)
 	return TRUE;
 }
 
-
-BOOL CBlogToBookDoc::OnSaveDocument(LPCTSTR lpszPathName)
+BOOL CBlogToBookDoc::SaveDoc(CString b2bfile)
 {
-	// TODO: Add your specialized code here and/or call the base class
-
 	CFile file;
-	if (file.Open(lpszPathName, CFile::modeCreate | CFile::modeWrite))
+	if (file.Open(b2bfile, CFile::modeCreate | CFile::modeWrite))
 	{
 		m_Blog.GetBlogInfo();
 		m_Blog.GetBookInfo();
@@ -1539,7 +1754,7 @@ BOOL CBlogToBookDoc::OnSaveDocument(LPCTSTR lpszPathName)
 			return FALSE;
 		}
 
-		m_B2BFile = lpszPathName;
+		m_B2BFile = b2bfile;
 		return TRUE;
 
 	}
@@ -1549,7 +1764,15 @@ BOOL CBlogToBookDoc::OnSaveDocument(LPCTSTR lpszPathName)
 		return FALSE;
 	}
 
-	return FALSE;//CDocument::OnSaveDocument(lpszPathName);
+	return FALSE;
+}
+
+BOOL CBlogToBookDoc::OnSaveDocument(LPCTSTR lpszPathName)
+{
+	// TODO: Add your specialized code here and/or call the base class
+	return SaveDoc(lpszPathName);
+
+	//CDocument::OnSaveDocument(lpszPathName);
 }
 
 
@@ -1771,4 +1994,83 @@ void CBlogToBookDoc::UpdateB2BData()
 	m_Blog.SetBlogInfo();
 	m_Blog.SetBookInfo();
 
+}
+
+BOOL CBlogToBookDoc::ClearChache()
+{
+	// Pointer to a GROUPID variable
+	GROUPID groupId = 0;
+
+	// Local variables
+	DWORD cacheEntryInfoBufferSizeInitial = 0;
+	DWORD cacheEntryInfoBufferSize = 0;
+	int *cacheEntryInfoBuffer = 0;
+	INTERNET_CACHE_ENTRY_INFO *internetCacheEntry;
+	HANDLE enumHandle = NULL;
+	BOOL returnValue = false;
+
+	// Delete the groups first.
+		// Groups may not always exist on the system.
+		// For more information, visit the following Microsoft Web site:
+		// http://msdn2.microsoft.com/en-us/library/ms909365.aspx
+		// By default, a URL does not belong to any group. Therefore, that cache may become
+		// empty even when the CacheGroup APIs are not used because the existing URL does not belong to any group.
+	enumHandle = FindFirstUrlCacheGroup(0, CACHEGROUP_SEARCH_ALL, 0, 0, &groupId, 0);
+
+	// If there are no items in the Cache, you are finished.
+	if (enumHandle != NULL && ERROR_NO_MORE_ITEMS == GetLastError())
+		return 0;
+
+	// Loop through Cache Group, and then delete entries.
+	while (1)
+	{
+		// Delete a particular Cache Group.
+		returnValue = DeleteUrlCacheGroup(groupId, CACHEGROUP_FLAG_FLUSHURL_ONDELETE, 0);
+
+		if (!returnValue && ERROR_FILE_NOT_FOUND == GetLastError())
+		{
+			returnValue = FindNextUrlCacheGroup(enumHandle, &groupId, 0);
+		}
+
+		if (!returnValue && (ERROR_NO_MORE_ITEMS == GetLastError() || ERROR_FILE_NOT_FOUND == GetLastError()))
+		{
+			break;
+		}
+	}
+
+	// Start to delete URLs that do not belong to any group.
+	enumHandle = FindFirstUrlCacheEntry(NULL, 0, &cacheEntryInfoBufferSizeInitial);
+	if (enumHandle == NULL && ERROR_NO_MORE_ITEMS == GetLastError())
+		return 0;
+
+	cacheEntryInfoBufferSize = cacheEntryInfoBufferSizeInitial;
+	internetCacheEntry = (INTERNET_CACHE_ENTRY_INFO *)malloc(cacheEntryInfoBufferSize);
+	enumHandle = FindFirstUrlCacheEntry(NULL, internetCacheEntry, &cacheEntryInfoBufferSizeInitial);
+	while (1)
+	{
+		cacheEntryInfoBufferSizeInitial = cacheEntryInfoBufferSize;
+		returnValue = DeleteUrlCacheEntry(internetCacheEntry->lpszSourceUrlName);
+
+		if (!returnValue)
+		{
+			returnValue = FindNextUrlCacheEntry(enumHandle, internetCacheEntry, &cacheEntryInfoBufferSizeInitial);
+		}
+
+		DWORD dwError = GetLastError();
+		if (!returnValue && ERROR_NO_MORE_ITEMS == dwError)
+		{
+			break;
+		}
+
+		if (!returnValue && cacheEntryInfoBufferSizeInitial > cacheEntryInfoBufferSize)
+		{
+			cacheEntryInfoBufferSize = cacheEntryInfoBufferSizeInitial;
+			internetCacheEntry = (INTERNET_CACHE_ENTRY_INFO *)realloc(internetCacheEntry, cacheEntryInfoBufferSize);
+			returnValue = FindNextUrlCacheEntry(enumHandle, internetCacheEntry, &cacheEntryInfoBufferSizeInitial);
+		}
+	}
+
+	free(internetCacheEntry);
+	printf("deleted the cache entries\n");
+	return 0;
 }

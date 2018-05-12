@@ -56,7 +56,44 @@ BEGIN_MESSAGE_MAP(CBlogToBookView, CView)
 	ON_COMMAND(ID_COMBO_FONT_TITLE, &CBlogToBookView::OnComboFontTitle)
 	ON_COMMAND(ID_COMBO_FONT_BODY, &CBlogToBookView::OnComboFontBody)
 	ON_COMMAND(ID_BUTTON_RESET_FONT, &CBlogToBookView::OnButtonResetFont)
+	ON_MESSAGE(FETCH_THREAD_NOTIFY, OnFetchThreadNotify)
 END_MESSAGE_MAP()
+
+LRESULT CBlogToBookView::OnFetchThreadNotify(WPARAM wp, LPARAM lp)
+{
+	CMainFrame * fwnd = (CMainFrame*)AfxGetMainWnd();
+	CBlogToBookDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc) return 0;
+
+	CString str;
+
+	if (wp > 0)
+	{
+		CString s;
+		s.Format(_T("%d"), lp);
+		m_ArList.InsertItem(lp, s);
+		s.Format(_T("%d-%02d"), wp / 100, wp % 100);
+		m_ArList.SetItemText(lp, 2, s);
+		s.Format(_T("Found: %d Articles"), lp);
+		m_ArList.SetItemText(1, 3, s);
+
+	}
+	else
+	{
+		if (lp == 1) str = _T("Error fetching articles. Check your internet connection or address.");
+		if (lp == 2) pDoc->m_Blog.SetBookInfo();
+		if (lp == 3)
+		{
+			Invalidate(); 
+			str = _T("Finished fetching articles.");
+		}
+	}
+
+	fwnd->SetCaption(str);
+
+	return 0;
+}
 
 // CBlogToBookView construction/destruction
 
@@ -431,6 +468,10 @@ void CBlogToBookView::OnDraw(CDC* pDC)
 			DrawChaperTitle(pDC, title, &pageRect, pDoc->m_ChapterNumDisp[m_ChapterNum]);
 		}
 
+		//convert to utf-8
+		//str = CA2CT(str.GetBuffer(), CP_UTF8);
+
+
 		CFont renderFont;
 		renderFont.CreatePointFont((int)(m_BodyFontSize * 10 * m_PageScale), m_BodyFont);
 		CFont * oldfont = pDC->SelectObject(&renderFont);
@@ -800,7 +841,7 @@ void CBlogToBookView::OnButtonList()
 	Invalidate();
 	m_ArList.ShowWindow(SW_SHOW);
 
-	pDoc->ShowCaption(_T("Include/exclude articles from the list."));
+	pDoc->ShowCaption(_T("Include/exclude articles from the list. Or Render the pages for a preview."));
 }
 
 

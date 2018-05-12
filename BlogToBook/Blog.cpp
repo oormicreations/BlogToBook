@@ -107,6 +107,7 @@ BOOL CBlog::SetBlogInfo()
 	ASSERT_VALID(pRibbon);
 	if (!pRibbon) return FALSE;
 
+	if (m_BlogUrl.IsEmpty()) m_BlogUrl = _T("https://yourblog.blogspot.com");
 	CMFCRibbonEdit* ribbonEdit = DYNAMIC_DOWNCAST(CMFCRibbonEdit, pRibbon->FindByID(ID_EDIT_ADDR));
 	ribbonEdit->SetEditText(m_BlogUrl);
 
@@ -117,11 +118,13 @@ BOOL CBlog::SetBlogInfo()
 	ribbonEdit->SetEditText(m_BlogAuthor);
 
 	CString str;
-	str.Format(_T("%d%d"), m_YearStart, m_MonthStart);
+	str = _T("YYYYMM");
+	if ((m_YearStart > 0) && (m_MonthStart > 0)) str.Format(_T("%d%02d"), m_YearStart, m_MonthStart);
 	ribbonEdit = DYNAMIC_DOWNCAST(CMFCRibbonEdit, pRibbon->FindByID(ID_EDIT_FETCHFROM));
 	ribbonEdit->SetEditText(str);
 
-	str.Format(_T("%d%d"), m_YearEnd, m_MonthEnd);
+	str = _T("YYYYMM");
+	if ((m_YearEnd > 0) && (m_MonthEnd > 0)) str.Format(_T("%d%02d"), m_YearEnd, m_MonthEnd);
 	ribbonEdit = DYNAMIC_DOWNCAST(CMFCRibbonEdit, pRibbon->FindByID(ID_EDIT_FETCHTO));
 	ribbonEdit->SetEditText(str);
 
@@ -164,6 +167,7 @@ void CBlog::Clear()
 	{
 		SetArticle(i, data);
 	}
+
 }
 
 void CBlog::SetDemoData()
@@ -265,16 +269,16 @@ void CBlog::SetBookInfo()
 	ribbonItem = DYNAMIC_DOWNCAST(CMFCRibbonEdit, pRibbon->FindByID(ID_EDIT_BOOK_ISBN));
 	ribbonItem->SetEditText(m_BlogISBN);
 
-	CMainFrame * fwnd = (CMainFrame*)AfxGetMainWnd();
+	//CMainFrame * fwnd = (CMainFrame*)AfxGetMainWnd();
 	//fwnd->m_Ref = m_IncludeB2BRef;
 
 	//Cannot set the checkbox in ribbon
-	CMFCRibbonCheckBox* ribbonItemChk = DYNAMIC_DOWNCAST(CMFCRibbonCheckBox, pRibbon->FindByID(ID_CHECK_REF));
-	if (ribbonItemChk->IsChecked() != m_IncludeB2BRef)
-	{
-		//does not work at app launch
+	//CMFCRibbonCheckBox* ribbonItemChk = DYNAMIC_DOWNCAST(CMFCRibbonCheckBox, pRibbon->FindByID(ID_CHECK_REF));
+	//if (ribbonItemChk->IsChecked() != m_IncludeB2BRef)
+	//{
+		////does not work at app launch
 		//PostMessage(fwnd->GetSafeHwnd(), WM_COMMAND, MAKEWPARAM(ID_CHECK_REF, BN_CLICKED), (LPARAM)NULL);
-	}
+	//}
 
 
 }
