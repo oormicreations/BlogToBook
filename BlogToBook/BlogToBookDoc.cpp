@@ -87,6 +87,7 @@ UINT FetchProc(LPVOID param)
 		else
 		{
 			::SendMessage(pp->tphWndView, FETCH_THREAD_NOTIFY, 0, 1);
+			return 1;
 		}
 
 	}
@@ -101,24 +102,19 @@ UINT FetchProc(LPVOID param)
 	else
 	{
 		//create end page
-		CString str;
-		CString sp[] = { pDoc->m_Blog.m_CoverPath, pDoc->m_Blog.m_Copyright, pDoc->m_Blog.m_Dedication, pDoc->m_Blog.m_Preface, pDoc->m_Blog.m_EndPage };
-		CString sn[] = { _T("Cover"), _T("Copyright"), _T("Dedication"), _T("Preface"), _T("End Page") };
-		CString st[] = { pDoc->m_Blog.m_CoverTitle, pDoc->m_Blog.m_CopyrightTitle, pDoc->m_Blog.m_DedicationTitle, pDoc->m_Blog.m_PrefaceTitle, pDoc->m_Blog.m_EndPageTitle };
+		if (!pDoc->CreateEndPage())
+		{
+			::SendMessage(pp->tphWndView, FETCH_THREAD_NOTIFY, 0, 1);
+			return 1;
+		}
 
-		int i = pDoc->m_TitleCount++;
-		str.Format(_T("pre%03d.txt"), i);
-		if (!pDoc->SaveFile(str, pDoc->m_RawDataPath, sp[MAXEXTRAPAGES]))return 1;
-
-		sp[MAXEXTRAPAGES].Replace(_T("\r\n"), _T("<br />\r\n"));
-		str.Format(_T("raw%03d.txt"), i);
-		if (!pDoc->SaveFile(str, pDoc->m_RawDataPath, _T("<p class=\"chap\" >b2bchaptername</p><br />") + sp[MAXEXTRAPAGES]))return 1;
-
-		str.Format(_T("|raw%03d.txt|pre%03d.txt\r\n"), i, i);
-		pDoc->m_Index = pDoc->m_Index + _T("Enabled|None|") + st[MAXEXTRAPAGES] + _T("|") + sn[MAXEXTRAPAGES] + str;
 
 		//save index
-		if (!pDoc->SaveFile(_T("index.txt"), pDoc->m_RawDataPath, pDoc->m_Index))return 1;
+		if (!pDoc->SaveFile(_T("index.txt"), pDoc->m_RawDataPath, pDoc->m_Index))
+		{
+			::SendMessage(pp->tphWndView, FETCH_THREAD_NOTIFY, 0, 1);
+			return 1;
+		}
 
 		pDoc->SetAllArticles();
 		pDoc->SetModifiedFlag(TRUE);
@@ -168,6 +164,7 @@ BEGIN_MESSAGE_MAP(CBlogToBookDoc, CDocument)
 	ON_COMMAND(ID_BUTTON_CALIBRE, &CBlogToBookDoc::OnButtonCalibre)
 	ON_COMMAND(ID_BUTTON_HELP, &CBlogToBookDoc::OnButtonHelp)
 	ON_COMMAND(ID_BUTTON_UPDATE, &CBlogToBookDoc::OnButtonUpdate)
+	ON_COMMAND(ID_BUTTON_IMPORT, &CBlogToBookDoc::OnButtonImport)
 END_MESSAGE_MAP()
 
 
@@ -604,6 +601,9 @@ BOOL CBlogToBookDoc::BuildBook()
 		return FALSE;//content not found
 	}
 
+	m_BlogPageRaw = CleanPage(m_BlogPageRaw);//also creates preview page data
+
+/*
 	//remove tables
 	bstart = _T("<table");
 	bend = _T("</table>");
@@ -687,7 +687,7 @@ BOOL CBlogToBookDoc::BuildBook()
 	m_BlogPagePreview.Replace(_T("&#8230;"), _T("..."));
 	m_BlogPagePreview.Replace(_T("\r\n\r\n\r\n\r\n"), _T("\r\n\r\n"));
 	m_BlogPagePreview.Replace(_T("\r\n\r\n\r\n"), _T("\r\n\r\n"));
-
+*/
 	return 0;
 }
 
@@ -781,12 +781,12 @@ BOOL CBlogToBookDoc::SaveFile(CString fname, CString path, CString data)
 }
 
 
-void CBlogToBookDoc::OnButtonFetch()
+BOOL CBlogToBookDoc::PrepareProject()
 {
 	if (!m_IsProjectLoaded)
 	{
 		OnNewDocument();
-		return;
+		return FALSE;
 	}
 
 	if (!m_Index.IsEmpty())
@@ -794,7 +794,7 @@ void CBlogToBookDoc::OnButtonFetch()
 		int res = AfxMessageBox(_T("Overwrite current data?"), MB_YESNO);
 		if (res == IDNO)
 		{
-			return;
+			return FALSE;
 		}
 		else
 		{
@@ -808,26 +808,19 @@ void CBlogToBookDoc::OnButtonFetch()
 	if (m_ProjectPath.IsEmpty())
 	{
 		OnNewDocument();
-		return;
+		return FALSE;
 	}
 
-	if (!m_Blog.GetDateRange())
-	{
-		AfxMessageBox(_T("There is some problem with start and end dates. Ensure that the format is YYYYMM, year is after 1998 and end date is not before start date."));
-		return;
-	}
 
 	if (!m_Blog.GetBlogInfo())
 	{
 		m_Blog.m_BlogUrl = _T("");
 		AfxMessageBox(_T("There is some problem with blog name, author or address. Ensure that they are correct and not blank."));
-		return;
+		return FALSE;
 	}
-
 
 	//set paths
 	SetProjectPaths();
-
 
 	//copy template
 	SHCopy(m_BlankPath + _T("*"), m_ProjectPath);
@@ -844,18 +837,62 @@ void CBlogToBookDoc::OnButtonFetch()
 	m_Index = _T("");
 	for (int i = 0; i < MAXEXTRAPAGES; i++)
 	{
+		CString s1, s2;
 		str.Format(_T("pre%03d.txt"), i);
-		if(!SaveFile(str, m_RawDataPath, sp[i]))return;
+		if (!SaveFile(str, m_RawDataPath, sp[i]))return FALSE;
+		s2 = str;
 
 		str.Format(_T("raw%03d.txt"), i);
 		sp[i].Replace(_T("\r\n"), _T("<br />\r\n"));
-		if (!SaveFile(str, m_RawDataPath, _T("<p class=\"chap\" >b2bchaptername</p><br />") + sp[i]))return;
+		if (!SaveFile(str, m_RawDataPath, _T("<p class=\"chap\" >b2bchaptername</p><br />") + sp[i]))return FALSE;
+		s1 = str;
 
 		str.Format(_T("|raw%03d.txt|pre%03d.txt\r\n"), i, i);
 		m_Index = m_Index + _T("Enabled|None|") + st[i] + _T("|") + sn[i] + str;
+
+		m_Blog.SetArticle(i, st[i], _T("None"), sn[i], TRUE, s1, s2);
 	}
 	//save
-	SaveDoc(m_ProjectPath+m_ProjectName);
+	SaveDoc(m_ProjectPath + m_ProjectName + _T(".b2b"));
+
+	return TRUE;
+}
+
+BOOL CBlogToBookDoc::CreateEndPage()
+{
+	CString s1, s2;
+	CString str;
+	CString sp[] = { m_Blog.m_CoverPath, m_Blog.m_Copyright, m_Blog.m_Dedication, m_Blog.m_Preface, m_Blog.m_EndPage };
+	CString sn[] = { _T("Cover"), _T("Copyright"), _T("Dedication"), _T("Preface"), _T("End Page") };
+	CString st[] = { m_Blog.m_CoverTitle, m_Blog.m_CopyrightTitle, m_Blog.m_DedicationTitle, m_Blog.m_PrefaceTitle, m_Blog.m_EndPageTitle };
+
+	int i = m_TitleCount++;
+	str.Format(_T("pre%03d.txt"), i);
+	if (!SaveFile(str, m_RawDataPath, sp[MAXEXTRAPAGES]))return FALSE;
+	s2 = str;
+
+	sp[MAXEXTRAPAGES].Replace(_T("\r\n"), _T("<br />\r\n"));
+	str.Format(_T("raw%03d.txt"), i);
+	if (!SaveFile(str, m_RawDataPath, _T("<p class=\"chap\" >b2bchaptername</p><br />") + sp[MAXEXTRAPAGES]))return FALSE;
+	s1 = str;
+
+	str.Format(_T("|raw%03d.txt|pre%03d.txt\r\n"), i, i);
+	m_Index = m_Index + _T("Enabled|None|") + st[MAXEXTRAPAGES] + _T("|") + sn[MAXEXTRAPAGES] + str;	
+
+	m_Blog.SetArticle(i, st[MAXEXTRAPAGES], _T("None"), sn[MAXEXTRAPAGES], TRUE, s1, s2);
+
+	return TRUE;
+}
+
+void CBlogToBookDoc::OnButtonFetch()
+{
+	if (!m_Blog.GetDateRange())
+	{
+		AfxMessageBox(_T("There is some problem with start and end dates. Ensure that the format is YYYYMM, year is after 1998 and end date is not before start date."));
+		return;
+	}
+
+	if(!PrepareProject()) return;
 
 	//clear wininet cache
 	//ClearChache();
@@ -1356,6 +1393,7 @@ BOOL CBlogToBookDoc::SaveIndex()
 
 	}
 
+	m_Index = str;
 	return SaveFile(_T("index.txt"), m_RawDataPath, str);
 }
 
@@ -2091,4 +2129,208 @@ BOOL CBlogToBookDoc::ClearChache()
 	free(internetCacheEntry);
 	printf("deleted the cache entries\n");
 	return 0;
+}
+
+
+void CBlogToBookDoc::OnButtonImport()
+{
+	if(!PrepareProject()) return;
+
+	CFileDialog DataFileOpenDialog(true, _T("xml"), _T(""), OFN_HIDEREADONLY, _T("XML Files (*.xml)|*.xml|(*.xml)|*.txt|(*.txt)|*.txt|All Files (*.*)|*.*||"));
+	DataFileOpenDialog.m_ofn.lpstrTitle = _T("Select an xml backup file ...");
+	DataFileOpenDialog.m_ofn.lpstrInitialDir = m_ProjectPath;
+	INT_PTR res = DataFileOpenDialog.DoModal();
+	if (res == IDCANCEL) return;
+	CString str = DataFileOpenDialog.GetPathName();
+
+	LoadPage(str);
+	if (m_BlogPageRaw.Find(_T("<id>tag:blogger.com")) < 0)
+	{
+		int res = AfxMessageBox(_T("This file doesn't look like a blogger.com backup file.\r\nDo you wish to proceed anyway?"), MB_YESNO);
+		if (res == IDNO) return;
+	}
+
+	int npost = 0;
+	
+	//discard nonpost data
+	npost = m_BlogPageRaw.Find(_T("kind#post"));
+	if (npost > 500)npost = npost - 1000;//rewind a bit
+	if (npost >= 0)
+	{
+		int nentry = m_BlogPageRaw.Find(_T("<entry>"), npost);
+		if (nentry >= 0)
+		{
+			m_BlogPageRaw = m_BlogPageRaw.Right(m_BlogPageRaw.GetLength() - nentry);
+		}
+	}
+
+	int skip = 0;
+	CString s;
+	m_TitleCount = MAXEXTRAPAGES;
+	int arNum = MAXEXTRAPAGES;
+
+	//loop
+	int nentry = m_BlogPageRaw.Find(_T("<entry>"), skip);
+	while (nentry >= 0)
+	{
+		nentry = m_BlogPageRaw.Find(_T("<entry>"), skip);
+		if (nentry >= 0)
+		{
+			int nkind = m_BlogPageRaw.Find(_T("kind#post"), skip);
+			if (nkind < 0)break;
+
+			CString data[6];
+
+			data[0] = _T("Enabled");
+			data[1] = GetTag(_T("<published>"), _T("</published>"), skip);
+			data[2] = GetTag(_T("<title type='text'>"), _T("</title>"), skip);
+			data[3] = GetTag(_T("<app:draft>"), _T("</app:draft>"), skip);
+			data[4].Format(_T("raw%03d.txt"), arNum);
+			data[5].Format(_T("pre%03d.txt"), arNum);
+			if (data[3] == _T("yes"))
+			{
+				data[0] = _T("Disabled");
+				data[3] = _T("Draft");
+			}
+			else data[3] = _T("Published");
+
+			s = GetTag(_T("<content type='html'>"), _T("</content>"), skip);
+			s.Replace(_T("&lt;"), _T("<"));
+			s.Replace(_T("&gt;"), _T(">"));
+
+			s = CleanPage(s);
+			if(!SaveFile(data[4], m_RawDataPath, s)) return;
+			if(!SaveFile(data[5], m_RawDataPath, m_BlogPagePreview))return;
+
+			m_Blog.SetArticle(arNum, data);
+			m_TitleCount++;
+			arNum++;
+			if (arNum >= MAXARTICLES)break;
+		}
+
+		skip = m_BlogPageRaw.Find(_T("</entry>"), skip) + 1;
+	}
+
+	CreateEndPage();
+	m_Blog.m_ArticleCount = m_TitleCount;
+	if (!SaveIndex()) AfxMessageBox(_T("Error saving index.txt!"));
+
+	m_IsFetched = TRUE;
+	m_bListChanged = TRUE;
+	UpdateAllViews(NULL);
+
+}
+
+CString CBlogToBookDoc::GetTag(CString tag1, CString tag2, int from)
+{
+	CString s;
+	
+	int n1 = m_BlogPageRaw.Find(tag1, from);
+	int nen = m_BlogPageRaw.Find(_T("</entry>"), from);
+	if (n1 < nen)//restrict search to this entry
+	{
+		if (n1 >= 0)
+		{
+			int n2 = m_BlogPageRaw.Find(tag2, from);
+			if (n1 >= 0)
+			{
+				s = m_BlogPageRaw.Mid(n1, n2 - n1);
+				s.Replace(tag1, _T(""));
+			}
+		}
+	}
+
+	return s;
+
+}
+
+
+CString CBlogToBookDoc::CleanPage(CString s)
+{
+	//remove tables
+	CString bstart = _T("<table");
+	CString bend = _T("</table>");
+	//len = s.GetLength();
+	int offset = 0;
+
+	while (TRUE)
+	{
+		int n1 = s.Find(bstart, offset);
+		if (n1 >= 0)
+		{
+			int n2 = s.Find(bend);
+			CString s1, s2;
+			s1 = s.Mid(n1, n2 - n1 + bend.GetLength());
+			s.Replace(s1, _T(""));
+			offset = n1 + 1;
+		}
+		else break;
+	}
+
+	//remove html except p, br, b, u and i
+	bstart = _T("<");
+	bend = _T(">");
+	//len = s.GetLength();
+	offset = 0;
+	s.Replace(_T("\n"), _T(""));
+	s.Replace(_T("\r"), _T(""));
+	s.Replace(_T("&nbsp;"), _T(""));
+	s.Replace(_T("&amp;nbsp;"), _T(""));
+	s.Replace(_T("<blockquote class=\"tr_bq\">"), _T("<blockquote>"));
+	s.Replace(_T("<blockquote>"), _T("<p><i>"));
+	s.Replace(_T("</blockquote>"), _T("</i></p>"));
+	s.Replace(_T("</div>"), _T("</div><br />"));
+
+	m_BlogPagePreview = s;
+
+	CString s1;
+
+	while (TRUE)
+	{
+		int n1 = s.Find(bstart, offset);
+		if (n1 >= 0)
+		{
+			int n2 = s.Find(bend, offset+1);
+			s1 = s.Mid(n1, n2 - n1 + 1);
+
+			if ((s1 != _T("<br />")) && (s1 != _T("<b>")) && (s1 != _T("</b>")) 
+				&& (s1 != _T("<p>")) && (s1 != _T("</p>")) && (s1 != _T("<i>")) 
+				&& (s1 != _T("</i>")) && (s1 != _T("<u>")) && (s1 != _T("</u>")))
+			{
+				s.Replace(s1, _T(""));
+				m_BlogPagePreview.Replace(s1, _T(""));
+				offset = n1;
+			}
+			else
+			{
+				offset = n2;
+				if (s1 == _T("<br />"))
+				{
+					m_BlogPagePreview.Replace(s1, _T("\r\n")); //replace in preview version of the page
+				}
+				else
+				{
+					m_BlogPagePreview.Replace(s1, _T("")); //replace in preview version of the page
+				}
+			}
+		}
+		else break;
+	}
+	//s1.Format(, m_Titles[0]);
+	s = _T("<p class=\"c4\" >Chapter b2bchapternum</p><br /><p class=\"chap\" >b2bchaptername</p><br /><br />") + s;
+	s.Replace(_T("<br /><br /><br /><br />"), _T("<br /><br />"));
+	s.Replace(_T("<br /><br /><br />"), _T("<br /><br />"));
+	s.Replace(_T("<br />"), _T("<br />\r\n"));
+
+	//preview cleanup
+	m_BlogPagePreview.Replace(_T("&#8211;"), _T("-"));
+	m_BlogPagePreview.Replace(_T("&#8217;"), _T("'"));
+	m_BlogPagePreview.Replace(_T("&#8212;"), _T("--"));
+	m_BlogPagePreview.Replace(_T("&#8220;"), _T("\""));
+	m_BlogPagePreview.Replace(_T("&#8221;"), _T("\""));
+	m_BlogPagePreview.Replace(_T("&#8230;"), _T("..."));
+	m_BlogPagePreview.Replace(_T("\r\n\r\n\r\n\r\n"), _T("\r\n\r\n"));
+	m_BlogPagePreview.Replace(_T("\r\n\r\n\r\n"), _T("\r\n\r\n"));
+
+	return s;
 }

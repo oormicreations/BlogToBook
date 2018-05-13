@@ -538,6 +538,7 @@ BEGIN
     ID_BUTTON_CALIBRE       "Free and open sourced EBook Reader. Convert your Ebook to multiple formats or edit it.\nCalibre"
     ID_BUTTON_HELP          "Opens online help\nHelp"
     ID_BUTTON_UPDATE        "Check if an updated version is available\nCheck for Updates"
+    ID_BUTTON_IMPORT        "Import the data from the backup xml file.\nImport"
 END
 
 #endif    // English (United States) resources

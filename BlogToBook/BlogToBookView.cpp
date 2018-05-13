@@ -803,8 +803,8 @@ BOOL CBlogToBookView::CreateArList(CRect rc)
 	m_ArList.InsertColumn(0, _T("#"), LVCFMT_LEFT, nColWidth);
 	m_ArList.InsertColumn(1, _T("Include"), LVCFMT_LEFT, nColWidth);
 	m_ArList.InsertColumn(2, _T("Date"), LVCFMT_LEFT, nColWidth * 2);
-	m_ArList.InsertColumn(3, _T("Article"), LVCFMT_LEFT, nColWidth * 3);
-	m_ArList.InsertColumn(4, _T("Url"), LVCFMT_LEFT, nColWidth * 4);
+	m_ArList.InsertColumn(3, _T("Article"), LVCFMT_LEFT, nColWidth * 4);
+	m_ArList.InsertColumn(4, _T("Url/Info"), LVCFMT_LEFT, nColWidth * 2);
 	m_ArList.InsertColumn(5, _T("Raw File"), LVCFMT_LEFT, nColWidth);
 	m_ArList.InsertColumn(6, _T("Preview File"), LVCFMT_LEFT, nColWidth);
 

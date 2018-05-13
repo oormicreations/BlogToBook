@@ -119,6 +119,11 @@ public:
 	BOOL ClearChache();
 	BOOL SaveDoc(CString b2bfile);
 
+	CString GetTag(CString tag1, CString tag2, int from);
+	BOOL PrepareProject();
+	BOOL CreateEndPage();
+	CString CleanPage(CString s);
+
 
 
 	afx_msg void OnButtonFetch();
@@ -152,6 +157,7 @@ public:
 	virtual void SetTitle(LPCTSTR lpszTitle);
 	afx_msg void OnButtonHelp();
 	afx_msg void OnButtonUpdate();
+	afx_msg void OnButtonImport();
 };
 
 class CStdioFileWithClose : public CStdioFile
