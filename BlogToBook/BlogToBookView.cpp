@@ -70,13 +70,15 @@ LRESULT CBlogToBookView::OnFetchThreadNotify(WPARAM wp, LPARAM lp)
 
 	if (wp > 0)
 	{
-		CString s;
-		s.Format(_T("%d"), lp);
-		m_ArList.InsertItem(lp, s);
-		s.Format(_T("%d-%02d"), wp / 100, wp % 100);
-		m_ArList.SetItemText(lp, 2, s);
-		s.Format(_T("Found: %d Articles"), lp);
-		m_ArList.SetItemText(1, 3, s);
+		//CString s;
+		//s.Format(_T("%d"), lp);
+		//m_ArList.InsertItem(lp, s);
+		//s.Format(_T("%d-%02d"), wp / 100, wp % 100);
+		//m_ArList.SetItemText(lp, 2, s);
+		//s.Format(_T("Found: %d Articles"), lp);
+		//m_ArList.SetItemText(1, 3, s);
+
+		str.Format(_T("Fetching ... %d-%02d : Found: %d Articles"), wp / 100, wp % 100, lp);
 
 	}
 	else

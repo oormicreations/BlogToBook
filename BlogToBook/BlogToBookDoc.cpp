@@ -80,9 +80,9 @@ UINT FetchProc(LPVOID param)
 				if (month > pDoc->m_Blog.m_MonthEnd) break;
 			}
 
-			TRACE(_T("-----------------------y=%d,m=%d\r\n"), year, month);
+			//TRACE(_T("-----------------------y=%d,m=%d\r\n"), year, month);
 			::SendMessage(pp->tphWndView, FETCH_THREAD_NOTIFY, year * 100 + month, pDoc->m_TitleCount - MAXEXTRAPAGES + 1);
-			Sleep(1000);
+			//Sleep(1000);
 		}
 		else
 		{
@@ -90,6 +90,8 @@ UINT FetchProc(LPVOID param)
 		}
 
 	}
+
+	::SendMessage(pp->tphWndView, FETCH_THREAD_NOTIFY, year * 100 + month, pDoc->m_TitleCount - MAXEXTRAPAGES + 1);
 
 
 	if (pDoc->m_TitleCount < MAXEXTRAPAGES + 1)
@@ -403,15 +405,16 @@ BOOL CBlogToBookDoc::Fetch(CString url)
 
 	if (hUrl)
 	{
-		CHAR szBuffer[2048];
+		CHAR szBuffer[1024] = { 0 };
+
 		DWORD dwRead;
 		while (InternetReadFile(hUrl, szBuffer, sizeof(szBuffer)-1, &dwRead) == TRUE)
 		{
 			if (dwRead > 0)
 			{
 				szBuffer[dwRead] = 0;
-				CString str(szBuffer);
-				m_BlogPageRaw += str;
+				CString tstr(CA2CT(szBuffer, CP_UTF8));
+				m_BlogPageRaw += tstr;
 			}
 			else break;
 		}
@@ -628,7 +631,11 @@ BOOL CBlogToBookDoc::BuildBook()
 	offset = 0;
 	m_BlogPageRaw.Replace(_T("\n"), _T(""));
 	m_BlogPageRaw.Replace(_T("\r"), _T(""));
-	m_BlogPageRaw.Replace(_T("&nbsp"), _T(""));
+	m_BlogPageRaw.Replace(_T("&nbsp;"), _T(""));
+	m_BlogPageRaw.Replace(_T("<blockquote class=\"tr_bq\">"), _T("<blockquote>"));
+	m_BlogPageRaw.Replace(_T("<blockquote>"), _T("<p><i>"));
+	m_BlogPageRaw.Replace(_T("</blockquote>"), _T("</i></p>"));
+	m_BlogPageRaw.Replace(_T("</div>"), _T("</div><br />"));
 
 	m_BlogPagePreview = m_BlogPageRaw;
 
@@ -667,10 +674,19 @@ BOOL CBlogToBookDoc::BuildBook()
 	}
 	//s1.Format(, m_Titles[0]);
 	m_BlogPageRaw = _T("<p class=\"c4\" >Chapter b2bchapternum</p><br /><p class=\"chap\" >b2bchaptername</p><br /><br />") + m_BlogPageRaw;
-	m_BlogPageRaw.Replace(_T("<br /><br /><br /><br />"), _T("<br />"));
-	m_BlogPageRaw.Replace(_T("<br /><br /><br />"), _T("<br />"));
+	m_BlogPageRaw.Replace(_T("<br /><br /><br /><br />"), _T("<br /><br />"));
+	m_BlogPageRaw.Replace(_T("<br /><br /><br />"), _T("<br /><br />"));
 	m_BlogPageRaw.Replace(_T("<br />"), _T("<br />\r\n"));
 
+	//preview cleanup
+	m_BlogPagePreview.Replace(_T("&#8211;"), _T("-"));
+	m_BlogPagePreview.Replace(_T("&#8217;"), _T("'"));
+	m_BlogPagePreview.Replace(_T("&#8212;"), _T("--"));
+	m_BlogPagePreview.Replace(_T("&#8220;"), _T("\""));
+	m_BlogPagePreview.Replace(_T("&#8221;"), _T("\""));
+	m_BlogPagePreview.Replace(_T("&#8230;"), _T("..."));
+	m_BlogPagePreview.Replace(_T("\r\n\r\n\r\n\r\n"), _T("\r\n\r\n"));
+	m_BlogPagePreview.Replace(_T("\r\n\r\n\r\n"), _T("\r\n\r\n"));
 
 	return 0;
 }
@@ -858,6 +874,8 @@ void CBlogToBookDoc::OnButtonFetch()
 	CFrameWnd * fwnd = (CFrameWnd *)AfxGetMainWnd();
 	CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
 	if (view == NULL)return;
+	view->m_Render = FALSE;
+	UpdateAllViews(NULL);
 
 	param->tphWndView = view->m_hWnd;//always pass the handle, not a "this" or CWnd*
 
