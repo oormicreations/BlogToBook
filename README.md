@@ -1,8 +1,6 @@
 # BlogToBook
 
-================================================================================
 				BlogToBook Project Overview
-===============================================================================
 
 Blog to Book converts a blog hosted on blogspot.com into an Ebook in EPUB format.
 
