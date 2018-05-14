@@ -119,9 +119,9 @@ BEGIN
         MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
         MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
         MENUITEM SEPARATOR
-        MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT
-        MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
-        MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP
+        MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT, INACTIVE
+        MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW, INACTIVE
+        MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP, INACTIVE
         MENUITEM SEPARATOR
         MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
         MENUITEM SEPARATOR
@@ -131,9 +131,9 @@ BEGIN
     BEGIN
         MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
         MENUITEM SEPARATOR
-        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
+        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT, INACTIVE
+        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY, INACTIVE
+        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE, INACTIVE
     END
     POPUP "&View"
     BEGIN
@@ -488,7 +488,7 @@ STRINGTABLE
 BEGIN
     IDS_CAPTION_BUTTON      "Options..."
     IDS_CAPTION_BUTTON_TIP  "Click here to see more options"
-    IDS_CAPTION_TEXT        "Blog to Book is ready. Start by fetching your blog articles or open an existing project."
+    IDS_CAPTION_TEXT        "Blog To Book is ready. Start by creating a new project file. Click the New File Button from menu. Or open an existing project"
     IDS_CAPTION_IMAGE_TIP   "Important"
     IDS_CAPTION_IMAGE_TEXT  "Here is an informational message for the user."
 END

@@ -64,14 +64,14 @@ public:
 	UINT m_B2BVersion;
 	CBlog m_Blog;
 	
-	CString m_BlogPageRaw, m_BlogPagePreview, m_Status, m_Index, m_B2BRef, m_B2BRefPre;
-	CString /*m_UserPath,*/ m_BlankPath, m_ProjectPath, m_ProjectName, m_RawDataPath, m_BookFile, m_B2BFile;
+	CString m_BlogPageRaw, m_BlogPagePreview, m_Index, m_B2BRef, m_B2BRefPre;
+	CString m_BlankPath, m_ProjectPath, m_ProjectName, m_RawDataPath, m_BookFile, m_B2BFile;
 
 	CString m_Titles[MAXARTICLES];
 	CString m_TitleUrls[MAXARTICLES];
 	CString m_TitleDates[MAXARTICLES];
 	
-	BOOL m_IsFetched, m_ListEdited, m_bListChanged, m_IsProjectLoaded, m_IsCancelled, m_IsInstalled;
+	BOOL m_IsFetched, m_ListEdited, m_bListChanged, /*m_IsProjectLoaded, m_IsCancelled,*/ m_IsInstalled;
 	
 	UINT m_TitleCount, m_ChapterCount, m_TitlesMonthCount;
 	int m_ChapterList[MAXARTICLES];
@@ -89,12 +89,12 @@ public:
 	BOOL SavePages();
 	BOOL SaveFile(CString fname, CString path, CString data);
 
+	void Clear();
 	CString LoadPage(CString fpath);
 	BOOL BuildBook();
 	CString GetPreview(int npage = 0);
 	bool SHCopy(LPCTSTR from, LPCTSTR to);
 	bool SHDelete(LPCTSTR from);
-	void Clear();
 	void ShowCaption(CString str);
 	void SetArticleList();
 	int GetArticleCount();
@@ -123,8 +123,10 @@ public:
 	BOOL PrepareProject();
 	BOOL CreateEndPage();
 	CString CleanPage(CString s);
-
-
+	void SortArticles();
+	void GetBookFonts();
+	BOOL GetB2BFileName(BOOL open = FALSE, BOOL clear = FALSE);
+	void ClearList();
 
 	afx_msg void OnButtonFetch();
 	afx_msg void OnButtonSaveepub();
@@ -158,6 +160,10 @@ public:
 	afx_msg void OnButtonHelp();
 	afx_msg void OnButtonUpdate();
 	afx_msg void OnButtonImport();
+	afx_msg void OnFileNew();
+	afx_msg void OnFileOpen();
+	afx_msg void OnFileSave();
+	afx_msg void OnFileSaveAs();
 };
 
 class CStdioFileWithClose : public CStdioFile

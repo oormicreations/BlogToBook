@@ -165,6 +165,10 @@ BEGIN_MESSAGE_MAP(CBlogToBookDoc, CDocument)
 	ON_COMMAND(ID_BUTTON_HELP, &CBlogToBookDoc::OnButtonHelp)
 	ON_COMMAND(ID_BUTTON_UPDATE, &CBlogToBookDoc::OnButtonUpdate)
 	ON_COMMAND(ID_BUTTON_IMPORT, &CBlogToBookDoc::OnButtonImport)
+	ON_COMMAND(ID_FILE_NEW, &CBlogToBookDoc::OnFileNew)
+	ON_COMMAND(ID_FILE_OPEN, &CBlogToBookDoc::OnFileOpen)
+	ON_COMMAND(ID_FILE_SAVE, &CBlogToBookDoc::OnFileSave)
+	ON_COMMAND(ID_FILE_SAVE_AS, &CBlogToBookDoc::OnFileSaveAs)
 END_MESSAGE_MAP()
 
 
@@ -174,26 +178,9 @@ END_MESSAGE_MAP()
 CBlogToBookDoc::CBlogToBookDoc()
 {
 	// TODO: add one-time construction code here
-	m_IsInstalled = m_IsProjectLoaded = m_bListChanged = FALSE;
-	m_IsCancelled = m_ListEdited = m_IsFetched = FALSE;
-	m_TitleCount = 0;
-	m_ChapterCount = 0;
-
-	//m_UserPath = _T("");// GetUserDocumentPath(B2B_FOLDER) + _T("\\");
-	//m_BlankPath = _T("");// m_UserPath + _T("Blank");
-	//m_ProjectName = _T("");// _T("Project1");
-	//m_ProjectPath = _T("");// m_UserPath + m_ProjectName;
-	//m_RawDataPath = _T("");// m_ProjectPath + _T("\\Raw\\");
-
 	m_B2BVersion = 1;
-	m_B2BRef = _T("<br /><br />This EBook was created using the Free and Open Sourced windows application: <a href=\"http://github.com/oormicreations/BlogToBook\">Blog to Book</a> by <a href=\"http://oormi.in\">Oormi Creations</a>.");
-	m_B2BRefPre = _T("\r\n\r\nThis EBook was created using the Free and Open Sourced windows application: Blog to Book by Oormi Creations.");
-
-	for (int i = 0; i < MAXARTICLES; i++)
-	{
-		m_ChapterList[i] = 0;
-		m_ChapterNumDisp[i] = 0;
-	}
+	m_IsInstalled = FALSE;
+	srand((UINT)time(0));
 
 	LoadSettings();
 	if (!m_IsInstalled)
@@ -203,10 +190,7 @@ CBlogToBookDoc::CBlogToBookDoc()
 		ReportUsage();
 	}
 
-	//ReportUsage();//test
-	srand((UINT)time(0));
-
-	//BuildBook();//test
+	Clear();
 
 }
 
@@ -221,7 +205,7 @@ BOOL CBlogToBookDoc::OnNewDocument()
 
 	// TODO: add reinitialization code here
 	// (SDI documents will reuse this document)
-	CNewProjectDlg projectDlg;
+/*	CNewProjectDlg projectDlg;
 
 	if (IDOK == projectDlg.DoModal())
 	{
@@ -254,20 +238,49 @@ BOOL CBlogToBookDoc::OnNewDocument()
 		SetTitle(m_ProjectName);
 		m_IsCancelled = TRUE;
 	}
-
+*/
 	return TRUE;
 }
 
 void CBlogToBookDoc::Clear()
 {
+	m_bListChanged = FALSE;
+	m_ListEdited = FALSE; 
+	m_IsFetched = FALSE;
+	m_TitleCount = 0;
+	m_ChapterCount = 0;
+	m_TitlesMonthCount = 0;
 
-	m_Status = _T("");
+	m_B2BRef = _T("<br /><br />This EBook was created using the Free and Open Sourced windows application: <a href=\"http://github.com/oormicreations/BlogToBook\">Blog to Book</a> by <a href=\"http://oormi.in\">Oormi Creations</a>.");
+	m_B2BRefPre = _T("\r\n\r\nThis EBook was created using the Free and Open Sourced windows application: Blog to Book by Oormi Creations.");
+
+	for (int i = 0; i < MAXARTICLES; i++)
+	{
+		m_ChapterList[i] = 0;
+		m_ChapterNumDisp[i] = 0;
+	}
+
 	m_Index = _T("");
 	m_BlogPageRaw = _T("");
 	m_BlogPagePreview = _T("");
+	m_BlankPath = _T("");
+	m_ProjectPath = _T("");
+	m_ProjectName = _T("");
+	m_RawDataPath = _T("");
+	m_BookFile = _T("");
+	m_B2BFile = _T("");
+
+	m_BFontSz = 14;
+	m_TFontSz = 18;
+	m_BFont = _T("Garamond");
+	m_TFont = _T("Garamond");
+	m_SCEntries[0] = _T("");
+	m_SCEntries[1] = _T("");
+	m_SCEntries[2] = _T("");
+	m_SCID = _T("");
+	m_SCPass = _T("");
+
 	m_Blog.Clear();
-	m_IsFetched = FALSE;
-	m_bListChanged = FALSE;
 
 	for (int i = 0; i < MAXARTICLES; i++)
 	{
@@ -279,10 +292,20 @@ void CBlogToBookDoc::Clear()
 	}
 
 	CFrameWnd * fwnd = (CFrameWnd *)AfxGetMainWnd();
-	CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
-	if (view != NULL) view->m_ArList.DeleteAllItems();
-
-
+	if (fwnd)
+	{
+		CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
+		if (view != NULL)
+		{
+			view->m_ArList.DeleteAllItems();
+			view->OnButtonResetFont();
+			view->m_Render = FALSE;
+			m_Blog.SetBlogInfo();
+			m_Blog.SetBookInfo();
+			m_bListChanged = TRUE;
+			UpdateAllViews(NULL);
+		}
+	}
 
 }
 
@@ -509,10 +532,14 @@ CString CBlogToBookDoc::LoadPage(CString fpath)
 	  // Open the file with the specified encoding
 	FILE *fStream;
 	errno_t e = _tfopen_s(&fStream, fpath,	_T("rt,ccs=UTF-8"));
-	if (e != 0) return _T(""); // failed..
+	if (e != 0)
+	{
+		AfxMessageBox(fpath + _T("\r\n\r\nError: This file could not be loaded."));
+		return _T("");
+	}
 	CStdioFile f(fStream);  // open the file from this stream
 
-	UINT len = f.GetLength() * sizeof(TCHAR) ;
+	UINT len = (UINT)f.GetLength() * sizeof(TCHAR) ;
 	TCHAR *buf = new TCHAR [len+1];
 	ZeroMemory(buf, len + 1);
 
@@ -748,7 +775,11 @@ BOOL CBlogToBookDoc::SaveFile(CString fname, CString path, CString data)
 	// Open the file with the specified encoding
 	FILE *fStream;
 	errno_t e = _tfopen_s(&fStream, path + fname,	_T("wt,ccs=UTF-8"));
-	if (e != 0) return FALSE; // failed..
+	if (e != 0)
+	{
+		AfxMessageBox(path + fname + _T("\r\n\r\nError: This file could not be saved."));
+		return FALSE; 
+	}
 	CStdioFileWithClose f(fStream);  // open the file from this stream
 
 	data.Replace(_T("\r\n"), _T("\n"));
@@ -783,39 +814,22 @@ BOOL CBlogToBookDoc::SaveFile(CString fname, CString path, CString data)
 
 BOOL CBlogToBookDoc::PrepareProject()
 {
-	if (!m_IsProjectLoaded)
+	if (m_ProjectPath.IsEmpty())
 	{
-		OnNewDocument();
-		return FALSE;
+		OnFileNew();
 	}
 
 	if (!m_Index.IsEmpty())
 	{
 		int res = AfxMessageBox(_T("Overwrite current data?"), MB_YESNO);
-		if (res == IDNO)
-		{
-			return FALSE;
-		}
-		else
-		{
-			m_Blog.Clear();
-			m_bListChanged = TRUE;
-			Clear();
-			UpdateAllViews(NULL);
-		}
+		if (res == IDNO) return FALSE;
+		ClearList();
 	}
-
-	if (m_ProjectPath.IsEmpty())
-	{
-		OnNewDocument();
-		return FALSE;
-	}
-
 
 	if (!m_Blog.GetBlogInfo())
 	{
 		m_Blog.m_BlogUrl = _T("");
-		AfxMessageBox(_T("There is some problem with blog name, author or address. Ensure that they are correct and not blank."));
+		AfxMessageBox(_T("There is some problem with blog address.\r\nEnsure that it is correct and not blank."));
 		return FALSE;
 	}
 
@@ -852,8 +866,6 @@ BOOL CBlogToBookDoc::PrepareProject()
 
 		m_Blog.SetArticle(i, st[i], _T("None"), sn[i], TRUE, s1, s2);
 	}
-	//save
-	SaveDoc(m_ProjectPath + m_ProjectName + _T(".b2b"));
 
 	return TRUE;
 }
@@ -1050,7 +1062,8 @@ void CBlogToBookDoc::OnButtonSaveepub()
 
 		CString xhtmlName, rawName, contentChapter;
 		xhtmlName.Format(_T("Book\\OEBPS\\p%03d.xhtml"), i);
-		rawName.Format(_T("raw%03d.txt"), m_ChapterList[i]);
+		//rawName.Format(_T("raw%03d.txt"), m_ChapterList[i]);
+		rawName = m_Blog.m_Articles[m_ChapterList[i]].m_RawFile;
 
 		m_BlogPageRaw = LoadPage(m_RawDataPath + rawName);
 		if (m_BlogPageRaw.IsEmpty())return;
@@ -1129,6 +1142,8 @@ void CBlogToBookDoc::OnButtonSaveepub()
 	templateName = m_BlankPath + _T("Book\\OEBPS\\css\\style.css");
 	contentTemplate = LoadPage(templateName);
 	if (contentTemplate.IsEmpty())return;
+
+	GetBookFonts();
 
 	cnum.Format(_T("%d"), m_BFontSz);
 	contentTemplate.Replace(_T("b2bfontbodysz"), cnum);
@@ -1299,16 +1314,9 @@ void CBlogToBookDoc::OnEditAuth()
 
 void CBlogToBookDoc::OnButtonDemo()
 {
-
-	if(m_ProjectName.IsEmpty()) OnNewDocument();
-	else
+	if (m_B2BFile.IsEmpty())
 	{
-		if ((m_IsProjectLoaded) && (!m_Index.IsEmpty())) OnNewDocument();
-	}
-
-	if (m_IsCancelled)
-	{
-		m_IsCancelled = FALSE;
+		ShowCaption(_T("Create a new project to fetch demo content into."));
 		return;
 	}
 
@@ -1377,31 +1385,37 @@ void CBlogToBookDoc::SetAllArticles()
 BOOL CBlogToBookDoc::SaveIndex()
 {
 	CFrameWnd * fwnd = (CFrameWnd *)AfxGetMainWnd();
-	CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
-	view->UpdateChapterList();
-
-	CString str;
-	CString data[6];
-	for (UINT i = 0; i < m_TitleCount; i++)
+	if (fwnd)
 	{
-		m_Blog.GetArticle(i, data);
-		for (int j = 0; j < 5; j++)
+		CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
+		view->UpdateChapterList();
+		if (view)
 		{
-			str += data[j] + _T("|");
-		}
-		str += data[5] + _T("\r\n");
+			CString str;
+			CString data[6];
+			for (UINT i = 0; i < m_TitleCount; i++)
+			{
+				m_Blog.GetArticle(i, data);
+				for (int j = 0; j < 5; j++)
+				{
+					str += data[j] + _T("|");
+				}
+				str += data[5] + _T("\r\n");
 
+			}
+
+			m_Index = str;
+			return SaveFile(_T("index.txt"), m_RawDataPath, str);
+		}
 	}
 
-	m_Index = str;
-	return SaveFile(_T("index.txt"), m_RawDataPath, str);
+	return FALSE;
 }
 
 
 void CBlogToBookDoc::OnButtonShowfolder()
 {
-	if (!m_IsProjectLoaded) return;
-	ShellExecute(NULL, _T("open"), m_ProjectPath, NULL, NULL, SW_SHOW);
+	if (!m_ProjectPath.IsEmpty()) ShellExecute(NULL, _T("open"), m_ProjectPath, NULL, NULL, SW_SHOW);
 }
 
 CString CBlogToBookDoc::GetSCID()
@@ -1414,10 +1428,10 @@ CString CBlogToBookDoc::GetSCID()
 
 void CBlogToBookDoc::OnButtonShowcase()
 {
-	if (!m_IsProjectLoaded)
+	if (m_B2BFile.IsEmpty())
 	{
-		OnNewDocument();
-		if (!m_IsProjectLoaded)return;
+		AfxMessageBox(_T("You need to create/load a project before you can showcase the book."));
+		return;
 	}
 
 	if (m_BookFile.IsEmpty())
@@ -1427,14 +1441,7 @@ void CBlogToBookDoc::OnButtonShowcase()
 		{
 			OnButtonSaveepub();
 		}
-
 	}
-	if (m_B2BFile.IsEmpty())
-	{
-		AfxMessageBox(_T("You need to save your project before you can showcase the book."));
-		return;
-	}
-
 
 	if (!m_SCID.IsEmpty())
 	{
@@ -1556,7 +1563,7 @@ void CBlogToBookDoc::OnEditBookIsbn()
 
 void CBlogToBookDoc::OnButtonCover()
 {
-	if (!m_IsProjectLoaded) return;
+	if (m_Index.IsEmpty()) return;
 
 	//opens output file select dialog
 
@@ -1566,7 +1573,6 @@ void CBlogToBookDoc::OnButtonCover()
 	INT_PTR res = DataFileOpenDialog.DoModal();
 	if (res == IDCANCEL) return;
 	CString str = DataFileOpenDialog.GetPathName();
-	//CString ext = DataFileOpenDialog.GetFileExt();
 
 	CImage image;
 	HRESULT hr = image.Load(str);
@@ -1683,7 +1689,11 @@ void CBlogToBookDoc::OnButtonEndpage()
 
 void CBlogToBookDoc::EditAttributes(int arNum)
 {
-	if (!m_IsProjectLoaded) return;
+	if (m_Index.IsEmpty())
+	{
+		ShowCaption(_T("There is no content yet!"));
+		return;
+	}
 
 	CAttribDlg dialog;
 	CString sn[] = { _T("Cover"), _T("Copyright"), _T("Dedication"), _T("Preface"), _T("End Page") };
@@ -1745,49 +1755,47 @@ BOOL CBlogToBookDoc::OnOpenDocument(LPCTSTR lpszPathName)
 		return FALSE;
 
 	// TODO:  Add your specialized creation code here
-	Clear();
+	//Clear();
 
-	CFile file;
+	//CFile file;
 
-	if (file.Open(lpszPathName, CFile::modeRead))
-	{
-		CArchive ar(&file, CArchive::load);
-		Serialize(ar);
-		ar.Close();
-		file.Close();
-		if (m_B2BVersion != 1)
-		{
-			ShowCaption(_T("Error loading Project: Version mismatch. Or the file is not a b2b file. Or it is corrupted."));
-			return FALSE;
-		}
+	//if (file.Open(lpszPathName, CFile::modeRead))
+	//{
+	//	CArchive ar(&file, CArchive::load);
+	//	Serialize(ar);
+	//	ar.Close();
+	//	file.Close();
+	//	if (m_B2BVersion != 1)
+	//	{
+	//		ShowCaption(_T("Error loading Project: Version mismatch. Or the file is not a b2b file. Or it is corrupted."));
+	//		return FALSE;
+	//	}
 
-		SetProjectPaths();
-		SetAllArticles();
-	}
+	//	SetProjectPaths();
+	//	SetAllArticles();
+	//}
 
-	if (!m_Index.IsEmpty())
-	{
-		m_IsFetched = TRUE;
-		m_bListChanged = TRUE;
+	//if (!m_Index.IsEmpty())
+	//{
+	//	m_IsFetched = TRUE;
+	//	m_bListChanged = TRUE;
 
-		m_Blog.SetBlogInfo();
-		m_Blog.SetBookInfo();
-		SetRenderFonts();
+	//	m_Blog.SetBlogInfo();
+	//	m_Blog.SetBookInfo();
+	//	SetRenderFonts();
 
-		ShowCaption(_T("Project loaded: ") + m_ProjectName);
-		SetTitle(m_ProjectName);
+	//	ShowCaption(_T("Project loaded: ") + m_ProjectName);
+	//	SetTitle(m_ProjectName);
 
-		CFrameWnd * fwnd = (CFrameWnd *)AfxGetMainWnd();
-		CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
-		view->m_Render = FALSE;
+	//	CFrameWnd * fwnd = (CFrameWnd *)AfxGetMainWnd();
+	//	CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
+	//	view->m_Render = FALSE;
 
-		m_IsProjectLoaded = TRUE;
+	//	UpdateAllViews(NULL);
+	//}
+	//else ShowCaption(_T("Error loading Project: ") + m_ProjectName);
 
-		UpdateAllViews(NULL);
-	}
-	else ShowCaption(_T("Error loading Project: ") + m_ProjectName);
-
-	m_B2BFile = lpszPathName;
+	//m_B2BFile = lpszPathName;
 	return TRUE;
 }
 
@@ -1877,10 +1885,6 @@ CString CBlogToBookDoc::GetUserDocumentPath(UINT type)
 	{
 		CString str;
 		str.SetString(my_documents);
-		if (type == B2B_FOLDER_BLANK)
-		{
-			str = str + _T("\\Oormi Creations\\Blog To Book\\Blank");
-		}
 
 		if (type == B2B_FOLDER)
 		{
@@ -1910,6 +1914,7 @@ void CBlogToBookDoc::SetProjectPaths()
 {
 	TCHAR strPathName[MAX_PATH];
 	::GetModuleFileName(NULL, strPathName, _MAX_PATH);
+
 	m_BlankPath.SetString(strPathName);
 	m_BlankPath.Replace(_T("BlogToBook.exe"), _T("Blank\\"));
 
@@ -1977,12 +1982,8 @@ void CBlogToBookDoc::OnButtonUpdate()
 
 UINT UsageProc(LPVOID param)
 {
-#ifndef _DEBUG
-	static TCHAR frmdata[] = _T("appinstall=b2b_install&ver=1.0.0");
-#else
-	static TCHAR frmdata[] = _T("appinstall=b2b_install_D&ver=1.0.0");
-#endif
-
+	//static TCHAR frmdata[] = _T("appinstall=b2b_install_D&ver=1.0.0");
+	static CHAR frmdata[] = ("appinstall=b2b_install&ver=1.0.0");
 	static TCHAR hdrs[] = (_T("Content-Type: application/x-www-form-urlencoded"));
 	LPCTSTR accept[2] = { _T("*/*"), NULL };
 
@@ -1992,10 +1993,9 @@ UINT UsageProc(LPVOID param)
 
 	HINTERNET hReq = HttpOpenRequest(hSession, _T("POST"), _T("software/selftalkmsg/selftalkstat01.php"), NULL, NULL, accept, INTERNET_FLAG_SECURE, 1);
 
-	DWORD x = _tcslen(hdrs);
 	//not working with unicode version
 	//BOOL res = HttpSendRequest(hReq, _T("Content-Type: application/x-www-form-urlencoded"), _tcslen(hdrs), _T("appinstall=b2b_install&ver=1.0.0"), _tcslen(frmdata));
-	BOOL res = HttpSendRequestA(hReq, ("Content-Type: application/x-www-form-urlencoded"), _tcslen(hdrs), ("appinstall=b2b_install&ver=1.0.0"), _tcslen(frmdata));
+	BOOL res = HttpSendRequestA(hReq, ("Content-Type: application/x-www-form-urlencoded"), _tcslen(hdrs), frmdata, strlen(frmdata));
 
 	InternetCloseHandle(hReq);
 	InternetCloseHandle(hSession);
@@ -2131,6 +2131,20 @@ BOOL CBlogToBookDoc::ClearChache()
 	return 0;
 }
 
+void CBlogToBookDoc::ClearList()
+{
+	CFrameWnd * fwnd = (CFrameWnd *)AfxGetMainWnd();
+	if (fwnd)
+	{
+		CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
+		view->UpdateChapterList();
+		if (view)
+		{
+			view->m_ArList.DeleteAllItems();
+		}
+	}
+
+}
 
 void CBlogToBookDoc::OnButtonImport()
 {
@@ -2213,6 +2227,7 @@ void CBlogToBookDoc::OnButtonImport()
 
 	CreateEndPage();
 	m_Blog.m_ArticleCount = m_TitleCount;
+	SortArticles();
 	if (!SaveIndex()) AfxMessageBox(_T("Error saving index.txt!"));
 
 	m_IsFetched = TRUE;
@@ -2333,4 +2348,186 @@ CString CBlogToBookDoc::CleanPage(CString s)
 	m_BlogPagePreview.Replace(_T("\r\n\r\n\r\n"), _T("\r\n\r\n"));
 
 	return s;
+}
+
+void CBlogToBookDoc::SortArticles() 
+{
+	CString data1[6], data2[6];
+	int mid = ((int)m_TitleCount + MAXEXTRAPAGES) / 2;
+	for (int i = MAXEXTRAPAGES; i < mid; i++)
+	{
+		int j = m_TitleCount - (i - MAXEXTRAPAGES) - 2;
+		TRACE("i=%d %d=j\r\n", i, j);
+		m_Blog.GetArticle(i, data1);
+		m_Blog.GetArticle(j, data2);
+		m_Blog.SetArticle(i, data2);
+		m_Blog.SetArticle(j, data1);
+	}
+
+}
+
+void CBlogToBookDoc::GetBookFonts()
+{
+	CMFCRibbonBar* pRibbon = ((CFrameWndEx*)AfxGetMainWnd())->GetRibbonBar();
+	ASSERT_VALID(pRibbon);
+
+	CMFCRibbonEdit* ribbonItem = DYNAMIC_DOWNCAST(CMFCRibbonEdit, pRibbon->FindByID(ID_SPIN_BODY_SIZE));
+	m_BFontSz = _ttoi( ribbonItem->GetEditText());
+
+	ribbonItem = DYNAMIC_DOWNCAST(CMFCRibbonEdit, pRibbon->FindByID(ID_COMBO_FONT_BODY));
+	m_BFont = ribbonItem->GetEditText();
+
+	ribbonItem = DYNAMIC_DOWNCAST(CMFCRibbonEdit, pRibbon->FindByID(ID_SPIN_TITLE_SIZE));
+	m_TFontSz = _ttoi(ribbonItem->GetEditText());
+
+	ribbonItem = DYNAMIC_DOWNCAST(CMFCRibbonEdit, pRibbon->FindByID(ID_COMBO_FONT_TITLE));
+	m_TFont = ribbonItem->GetEditText();
+
+}
+
+BOOL CBlogToBookDoc::GetB2BFileName(BOOL open, BOOL clear)
+{
+	CFileDialog DataFileOpenDialog(open, _T("b2b"), _T(""), OFN_HIDEREADONLY, _T("B2B Files (*.b2b)|*.b2b|All Files (*.*)|*.*||"));
+	DataFileOpenDialog.m_ofn.lpstrTitle = _T("Save a new project ...");
+
+	CString s = GetUserDocumentPath(B2B_FOLDER);
+	if(!s.IsEmpty()) DataFileOpenDialog.m_ofn.lpstrInitialDir = s; //direct assignment not working(?)
+
+	INT_PTR res = DataFileOpenDialog.DoModal();
+	if (res == IDCANCEL) return FALSE;
+
+	if (PathFileExists(DataFileOpenDialog.GetPathName()))
+	{
+		if (!open)
+		{
+			int res = AfxMessageBox(_T("Do you wish to overwrite the existing project of the same name?"), MB_YESNO);
+			if (res == IDNO)return FALSE;
+		}
+	}
+
+	if(clear) Clear();
+
+	m_B2BFile = DataFileOpenDialog.GetPathName();
+
+	m_ProjectName = DataFileOpenDialog.GetFileTitle();
+	m_ProjectName.Replace(_T(".b2b"), _T(""));
+
+	m_ProjectPath = DataFileOpenDialog.GetFolderPath() + _T("\\") + m_ProjectName + _T("\\");
+
+	return TRUE;
+}
+
+void CBlogToBookDoc::OnFileNew()
+{
+	if (GetB2BFileName(FALSE, TRUE))
+	{
+		OnFileSave();
+		ShowCaption(_T("New project created. Start by fetching your blog articles, import from backup file."));
+	}
+}
+
+
+void CBlogToBookDoc::OnFileOpen()
+{
+	if (!GetB2BFileName(TRUE, TRUE)) return;
+
+	CFile file;
+	if (file.Open(m_B2BFile, CFile::modeRead))
+	{
+		CArchive ar(&file, CArchive::load);
+		Serialize(ar);
+		ar.Close();
+		file.Close();
+		if (m_B2BVersion != 1)
+		{
+			AfxMessageBox(_T("Error loading Project: Version mismatch. Or the file is not a b2b file. Or it is corrupted."));
+			return;
+		}
+
+		SetProjectPaths();
+		SetAllArticles();
+	}
+
+	if (!m_Index.IsEmpty())
+	{
+		m_IsFetched = TRUE;
+		m_bListChanged = TRUE;
+
+		m_Blog.SetBlogInfo();
+		m_Blog.SetBookInfo();
+		SetRenderFonts();
+
+		ShowCaption(_T("Project loaded: ") + m_ProjectName);
+		SetTitle(m_ProjectName);
+
+		CFrameWnd * fwnd = (CFrameWnd *)AfxGetMainWnd();
+		if (fwnd)
+		{
+			CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
+			if (view)
+			{
+				view->m_Render = FALSE;
+				UpdateAllViews(NULL);
+			}
+		}
+	}
+	else AfxMessageBox(_T("Error loading Project: ") + m_ProjectName);
+
+}
+
+
+void CBlogToBookDoc::OnFileSave()
+{
+	if (m_B2BFile.IsEmpty())
+	{
+		if (!GetB2BFileName())
+		{
+			return;
+		}
+	}
+
+	if (GetFileAttributes(m_ProjectPath) == INVALID_FILE_ATTRIBUTES)
+	{
+		if (SHCreateDirectoryEx(NULL, m_ProjectPath, NULL) != ERROR_SUCCESS)
+		{
+			AfxMessageBox(_T("Failed to create the project folder.\r\nEnsure you have rights or choose another location."));
+			return;
+		}
+	}
+
+
+	CFile file;
+	if (file.Open(m_B2BFile, CFile::modeCreate | CFile::modeWrite))
+	{
+		m_Blog.GetBlogInfo();
+		m_Blog.GetBookInfo();
+		m_Blog.GetDateRange();
+
+		CArchive ar(&file, CArchive::store);
+		Serialize(ar);
+		ar.Close();
+
+		if (!m_Index.IsEmpty())
+		{
+			if (!SaveIndex())return;
+		}
+		SetTitle(m_ProjectName);
+
+	}
+	else
+	{
+		AfxMessageBox(_T("Project file save error!"));
+		return;
+	}
+
+	return;
+}
+
+
+void CBlogToBookDoc::OnFileSaveAs()
+{
+	if (GetB2BFileName())
+	{
+		OnFileSave();
+	}
 }

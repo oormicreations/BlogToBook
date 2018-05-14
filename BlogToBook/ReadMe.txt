@@ -1,18 +1,15 @@
 ================================================================================
-				BlogToBook Project Overview
+				BlogToBook Release Notes
 ===============================================================================
 
-Blog to Book converts a blog hosted on blogspot.com into an Ebook in EPUB format.
-
-Features:
-* Fetch articles in a date range.
-* Select/deselect specific articles to be included in the book.
-* Single click book creation.
-* A demo blog for testing.
-* Supports Google's blogspot.com (Blogger platform) blogs.
-* Supports EPUB 3.0.
-* Supports MS Windows 7 onwards.
-* IDE is MS Visual Studio Community 2015.
+May 2018
+* Version 1.0.0
+* Import from blog backup xml file
+* Download from net
+* Save as EPUB
+* Showcase the book
+* Website created https://b2b.oormi.in
+* B2B Project management
 
 A FOSS Project by Oormi Creations
 http://oormi.in

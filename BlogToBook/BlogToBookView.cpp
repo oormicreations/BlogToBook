@@ -625,7 +625,7 @@ void CBlogToBookView::OnButtonRender()
 	ASSERT_VALID(pDoc);
 	if (!pDoc) return;
 
-	if (!pDoc->m_IsProjectLoaded) return;
+	if (pDoc->m_Index.IsEmpty()) return;
 
 	pDoc->UpdateB2BData();//extra pages are not updated, just fields in the ribbon
 

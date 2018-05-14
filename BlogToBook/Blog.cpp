@@ -95,8 +95,8 @@ BOOL CBlog::GetBlogInfo()
 	CMFCRibbonEdit* ribbonEditAuth = DYNAMIC_DOWNCAST(CMFCRibbonEdit, pRibbon->FindByID(ID_EDIT_AUTH));
 	m_BlogAuthor = ribbonEditAuth->GetEditText();
 
-	if (m_BlogName.IsEmpty()) return FALSE;
-	if (m_BlogAuthor.IsEmpty()) return FALSE;
+	if (m_BlogName.IsEmpty()) m_BlogName = _T("Untitled Blog");
+	if (m_BlogAuthor.IsEmpty()) m_BlogAuthor = _T("Anonymous Author");
 
 	return TRUE;
 }
@@ -161,6 +161,7 @@ void CBlog::Clear()
 	m_CoverTitle = _T("Cover");
 
 	m_IncludeB2BRef = TRUE;
+	m_ArticleCount = 0;
 
 	CString data[6];
 	for (int i = 0; i < MAXARTICLES; i++)
