@@ -71,7 +71,7 @@ public:
 	CString m_TitleUrls[MAXARTICLES];
 	CString m_TitleDates[MAXARTICLES];
 	
-	BOOL m_IsFetched, m_ListEdited, m_bListChanged, /*m_IsProjectLoaded, m_IsCancelled,*/ m_IsInstalled;
+	BOOL m_IsFetched, m_ListEdited, m_bListChanged, /*m_IsProjectLoaded, m_IsCancelled,*/ m_IsInstalled, m_Enable, m_IsNewProject;
 	
 	UINT m_TitleCount, m_ChapterCount, m_TitlesMonthCount;
 	int m_ChapterList[MAXARTICLES];
@@ -164,6 +164,10 @@ public:
 	afx_msg void OnFileOpen();
 	afx_msg void OnFileSave();
 	afx_msg void OnFileSaveAs();
+	afx_msg void OnUpdateEditAddr(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateEditFetchfrom(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateEditFetchto(CCmdUI *pCmdUI);
+	afx_msg void OnButtonDesign();
 };
 
 class CStdioFileWithClose : public CStdioFile

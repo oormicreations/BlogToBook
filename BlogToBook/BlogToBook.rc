@@ -221,17 +221,19 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 165, 122
+IDD_ABOUTBOX DIALOGEX 0, 0, 253, 122
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About BlogToBook"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
-    LTEXT           "BlogToBook, Version 1.0.0",IDC_STATIC,44,21,114,8,SS_NOPREFIX
-    LTEXT           "By Oormi Creations",IDC_STATIC,44,41,68,12
-    DEFPUSHBUTTON   "OK",IDOK,108,101,50,14,WS_GROUP
-    CONTROL         "https://oormi.in",IDC_MFCLINK1,"MfcLink",WS_TABSTOP,43,55,60,14
-    LTEXT           "Copyright (C) 2018",IDC_STATIC,43,76,62,8
+    LTEXT           "BlogToBook, Version 1.0.0",IDC_STATIC,40,21,114,8,SS_NOPREFIX
+    LTEXT           "By Oormi Creations",IDC_STATIC,40,34,68,12
+    DEFPUSHBUTTON   "OK",IDOK,7,101,50,14,WS_GROUP
+    CONTROL         "https://oormi.in",IDC_MFCLINK1,"MfcLink",WS_TABSTOP,40,50,60,14
+    LTEXT           "Copyright (C) 2018",IDC_STATIC,40,86,62,8
+    CONTROL         IDB_BITMAP_LOGO,IDC_STATIC,"Static",SS_BITMAP | SS_CENTERIMAGE | SS_REALSIZEIMAGE,133,7,113,105
+    CONTROL         "oormicreations@gmail.com",IDC_MFCLINK2,"MfcLink",WS_TABSTOP,40,62,94,14
 END
 
 
@@ -285,7 +287,7 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 158
+        RIGHTMARGIN, 246
         TOPMARGIN, 7
         BOTTOMMARGIN, 115
     END
@@ -331,6 +333,18 @@ BEGIN
 0x546c, 0x7865, 0x5474, 0x6f6f, 0x746c, 0x7069, 0x463e, 0x4c41, 0x4553, 
 0x2f3c, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 0x7546, 0x6c6c, 0x6554, 0x7478, 
 0x6f54, 0x6c6f, 0x6974, 0x3e70, 
+    IDC_MFCLINK2, 0x37c, 195, 0
+0x4d3c, 0x4346, 0x694c, 0x6b6e, 0x555f, 0x6c72, 0x6d3e, 0x6961, 0x746c, 
+0x3a6f, 0x2f2f, 0x6f6f, 0x6d72, 0x6369, 0x6572, 0x7461, 0x6f69, 0x736e, 
+0x6740, 0x616d, 0x6c69, 0x632e, 0x6d6f, 0x2f3c, 0x464d, 0x4c43, 0x6e69, 
+0x5f6b, 0x7255, 0x3e6c, 0x4d3c, 0x4346, 0x694c, 0x6b6e, 0x555f, 0x6c72, 
+0x7250, 0x6665, 0x7869, 0x3c3e, 0x4d2f, 0x4346, 0x694c, 0x6b6e, 0x555f, 
+0x6c72, 0x7250, 0x6665, 0x7869, 0x3c3e, 0x464d, 0x4c43, 0x6e69, 0x5f6b, 
+0x6f54, 0x6c6f, 0x6974, 0x3e70, 0x6d45, 0x6961, 0x3c6c, 0x4d2f, 0x4346, 
+0x694c, 0x6b6e, 0x545f, 0x6f6f, 0x746c, 0x7069, 0x3c3e, 0x464d, 0x4c43, 
+0x6e69, 0x5f6b, 0x7546, 0x6c6c, 0x6554, 0x7478, 0x6f54, 0x6c6f, 0x6974, 
+0x3e70, 0x4146, 0x534c, 0x3c45, 0x4d2f, 0x4346, 0x694c, 0x6b6e, 0x465f, 
+0x6c75, 0x546c, 0x7865, 0x5474, 0x6f6f, 0x746c, 0x7069, "\076" 
     0
 END
 
@@ -554,6 +568,16 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_INDIA
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Bitmap
+//
+
+IDB_BITMAP_LOGO         BITMAP                  "res\\OormiLogo.bmp"
+
+IDB_BITMAP_DESN         BITMAP                  "res\\coverdesign.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // Dialog
 //
 
@@ -593,24 +617,44 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
 CAPTION "Showcase your EBook"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "Close",IDOK,289,277,75,14
-    PUSHBUTTON      "Cancel",IDCANCEL,281,127,50,14,NOT WS_VISIBLE
-    LTEXT           "Optional Additional Info:",IDC_STATIC,7,130,84,8
-    EDITTEXT        IDC_EDIT_SC_PLINK,101,148,264,14,ES_AUTOHSCROLL
-    LTEXT           "Link to Print Edition:",IDC_STATIC,7,151,84,8
-    EDITTEXT        IDC_EDIT_SC_TAGS,101,169,264,14,ES_AUTOHSCROLL
-    LTEXT           "Tags or Categories:",IDC_STATIC,7,172,84,8
-    EDITTEXT        IDC_EDIT_SC_COMMENTS,101,191,264,14,ES_AUTOHSCROLL
-    LTEXT           "Any Comments:",IDC_STATIC,7,193,84,8
-    PUSHBUTTON      "Visit B2B Showcase",IDC_BUTTON_SC_VISIT,101,277,75,14
-    CONTROL         "terms and conditions, and privacy policy",IDC_SC_TCLINK,
-                    "MfcLink",WS_TABSTOP,118,214,134,14
-    CONTROL         "I have read and I agree to the",IDC_CHECK_TERMS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,215,109,10
+    PUSHBUTTON      "Browse for PDF version...",IDC_BUTTON_PDF,101,138,250,14
+    EDITTEXT        IDC_EDIT_SC_PLINK,101,156,249,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_SC_TAGS,101,175,249,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_SC_COMMENTS,101,194,249,14,ES_AUTOHSCROLL
+    CONTROL         "I have read and I agree to the",IDC_CHECK_TERMS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,221,109,10
     PUSHBUTTON      "Upload",IDC_BUTTON_SC_UPLOAD,195,277,75,14
-    CONTROL         "",IDC_PROGRESS_SC,"msctls_progress32",WS_BORDER,7,234,357,7
+    PUSHBUTTON      "Visit B2B Showcase",IDC_BUTTON_SC_VISIT,101,277,75,14
     PUSHBUTTON      "Remove",IDC_BUTTON_SC_REM,7,277,75,14
+    DEFPUSHBUTTON   "Close",IDOK,289,277,75,14
+    PUSHBUTTON      "Cancel",IDCANCEL,314,218,50,14,NOT WS_VISIBLE
+    LTEXT           "Link to Print Edition:",IDC_STATIC,15,159,71,8
+    LTEXT           "Tags or Categories:",IDC_STATIC,15,178,70,8
+    LTEXT           "Any Comments:",IDC_STATIC,15,196,63,8
+    CONTROL         "terms and conditions, and privacy policy",IDC_SC_TCLINK,
+                    "MfcLink",WS_TABSTOP,118,220,134,14
+    CONTROL         "",IDC_PROGRESS_SC,"msctls_progress32",WS_BORDER,7,240,357,7
     CONTROL         "",IDC_LIST_SCDATA,"SysListView32",LVS_REPORT | LVS_EDITLABELS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,7,357,118
-    EDITTEXT        IDC_EDIT_SCMSG,7,249,357,14,ES_CENTER | ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_EDIT_SCMSG,7,255,357,14,ES_CENTER | ES_AUTOHSCROLL | ES_READONLY
+    GROUPBOX        "Optional Additional Info",IDC_STATIC,7,129,357,86
+END
+
+IDD_DIALOG_DESIGN DIALOGEX 0, 0, 431, 202
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Cover design services"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_EDIT_DES_SUB,160,26,264,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_DES_DESC,127,56,297,118,ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL
+    EDITTEXT        IDC_EDIT_DES_FROM,307,7,118,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "Sure! Send me a quote.",IDC_BUTTON_DES_SEND,310,181,114,14
+    PUSHBUTTON      "No Thanks!",IDOK,7,181,114,14
+    EDITTEXT        IDC_EDIT_DES_TO,159,7,118,14,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "Cancel",IDCANCEL,151,181,50,14,NOT WS_VISIBLE
+    LTEXT           "To",IDC_STATIC,126,9,9,8
+    LTEXT           "From",IDC_STATIC,283,9,17,8
+    LTEXT           "Describe your requirement",IDC_STATIC,126,45,86,8
+    CONTROL         IDB_BITMAP_DESN,IDC_STATIC,"Static",SS_BITMAP | SS_CENTERIMAGE,7,7,114,168,WS_EX_DLGMODALFRAME
+    LTEXT           "Subject",IDC_STATIC,126,28,25,8
 END
 
 
@@ -645,6 +689,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 291
     END
+
+    IDD_DIALOG_DESIGN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 424
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 195
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -665,6 +717,11 @@ BEGIN
 END
 
 IDD_DIALOG_SHOWCASE AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOG_DESIGN AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -735,6 +792,14 @@ BEGIN
 "\076" 
     0
 END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// PNG
+//
+
+IDB_PNG_LOGO            PNG                     "C:\\Users\\Sanjeev\\Desktop\\MaxShell 1.0.0\\HelpImages\\OormiLogo.png"
 
 #endif    // English (India) resources
 /////////////////////////////////////////////////////////////////////////////

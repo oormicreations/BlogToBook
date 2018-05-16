@@ -17,6 +17,8 @@
 
 string g_BookPath;
 string g_CoverPath;
+string g_PDFPath;
+
 wstring g_Form;
 BOOL g_Success;
 
@@ -331,6 +333,7 @@ BEGIN_MESSAGE_MAP(CShowCase, CDialog)
 	ON_BN_CLICKED(IDOK, &CShowCase::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_BUTTON_SC_REM, &CShowCase::OnBnClickedButtonScRem)
 	ON_MESSAGE(SC_THREAD_NOTIFY, OnSCThreadNotify)
+	ON_BN_CLICKED(IDC_BUTTON_PDF, &CShowCase::OnBnClickedButtonPdf)
 END_MESSAGE_MAP()
 
 
@@ -348,12 +351,14 @@ LRESULT CShowCase::OnSCThreadNotify(WPARAM wp, LPARAM lp)
 	if ((int)lp == 3) SetDlgItemText(IDC_EDIT_SCMSG, _T("Sending data"));
 	if ((int)lp == 5) SetDlgItemText(IDC_EDIT_SCMSG, _T("Data uploaded"));
 	if ((int)lp == 7) SetDlgItemText(IDC_EDIT_SCMSG, _T("Cover image uploaded"));
-	if ((int)lp == 9) SetDlgItemText(IDC_EDIT_SCMSG, _T("EBook uploaded. Its Done!"));
+	if ((int)lp == 8) SetDlgItemText(IDC_EDIT_SCMSG, _T("EBook uploaded"));
+	if ((int)lp == 9) SetDlgItemText(IDC_EDIT_SCMSG, _T("PDF uploaded"));
 
 	if ((int)lp == 10)
 	{
 		ShellExecute(NULL, _T("open"), _T("http://b2b.oormi.in"), NULL, NULL, SW_SHOWNORMAL);
 		GetDlgItem(IDC_BUTTON_SC_UPLOAD)->EnableWindow(TRUE);
+		SetDlgItemText(IDC_EDIT_SCMSG, _T("It's done! Opening the showcase website."));
 	}
 
 	return 0;
@@ -393,10 +398,13 @@ UINT B2BDataProc(LPVOID param)
 	LPCTSTR accept[2] = { _T("*/*"), NULL };
 
 	HINTERNET hInternet = InternetOpen(_T("B2B Showcase"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+	if (!hInternet) ::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 0, 0);
 
 	HINTERNET hSession = InternetConnect(hInternet, _T("b2b.oormi.in"), INTERNET_DEFAULT_HTTPS_PORT, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 1);
+	if (!hSession) ::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 0, 0);
 
 	HINTERNET hReq = HttpOpenRequest(hSession, _T("POST"), _T("b2bsubmit.php"), NULL, NULL, accept, INTERNET_FLAG_SECURE, 1);
+	if (!hReq) ::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 0, 0);
 
 	wstring headers = L"Content-Type: application/x-www-form-urlencoded; charset=utf-8";
 
@@ -456,7 +464,19 @@ UINT B2BDataProc(LPVOID param)
 		AfxMessageBox(str);
 		return 1;
 	}
+	::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 80, 8);
+
+	upres = 0;
+	if(!g_PDFPath.empty()) upres = UploadFile(g_PDFPath);
+	if (upres)
+	{
+		str.Format(_T("Error Upload PDF File: %d"), upres);
+		::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 0, 0);
+		AfxMessageBox(str);
+		return 1;
+	}
 	::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 90, 9);
+
 	Sleep(1000);
 	::SendMessage(p->mDlg, SC_THREAD_NOTIFY, 100, 10);
 
@@ -475,12 +495,13 @@ BOOL CShowCase::B64Encode(CString sfilename, CString id, int type)
 		UINT slen = (UINT)sfile.GetLength();
 		if (slen > 0)
 		{
-			CString tfilename = sfilename;
+			CString tfilename = m_Data[18] + sfile.GetFileName();// sfilename;
 			CString sname = sfile.GetFileName();
 			tfilename.Replace(sname , id + _T("---") + sname + _T(".txt"));
 
 			if (type == 1) g_CoverPath = CT2A(tfilename);
 			if (type == 2) g_BookPath = CT2A(tfilename);
+			if (type == 3) g_PDFPath = CT2A(tfilename);
 
 			CFile tfile;
 			if (tfile.Open(tfilename, CFile::modeWrite | CFile::modeCreate))
@@ -559,13 +580,22 @@ void CShowCase::OnBnClickedButtonScUpload()
 		formData = formData + params[i] + m_Data[i];
 	}
 
+	if (!m_PDFFile.IsEmpty()) formData = formData + _T("&b2bpdf=") + m_PDFName;
+
 	SetDlgItemText(IDC_EDIT_SCMSG, _T("Encoding data"));
 	m_ProgCtrl.SetPos(10);
+
+	g_CoverPath = "";
+	g_BookPath = "";
+	g_PDFPath = "";
 
 	BOOL res1 = B64Encode(m_Data[10], m_Data[1], 1);
 	BOOL res2 = B64Encode(m_Data[16], m_Data[1], 2);
 
-	if (!res1 || !res2)
+	BOOL res3 = TRUE;
+	if(!m_PDFFile.IsEmpty()) res3 = B64Encode(m_PDFFile, m_Data[1], 3);
+
+	if (!res1 || !res2 || !res3)
 	{
 		AfxMessageBox(_T("Error encoding Ebook data:\r\n"));
 		return;
@@ -667,3 +697,18 @@ void CShowCase::OnBnClickedButtonScRem()
 
 }
 
+
+
+void CShowCase::OnBnClickedButtonPdf()
+{
+	CFileDialog DataFileOpenDialog(true, _T("pdf"), _T(""), OFN_FILEMUSTEXIST, _T("PDF Files (*.pdf)|*.pdf|All Files (*.*)|*.*||"));
+	DataFileOpenDialog.m_ofn.lpstrTitle = _T("Save a new project ...");
+
+	INT_PTR res = DataFileOpenDialog.DoModal();
+	if (res == IDCANCEL) return;
+
+	m_PDFFile = DataFileOpenDialog.GetPathName();
+	m_PDFName = DataFileOpenDialog.GetFileName();
+	SetDlgItemText(IDC_BUTTON_PDF, m_PDFName);
+
+}

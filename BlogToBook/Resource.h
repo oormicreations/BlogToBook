@@ -60,6 +60,10 @@
 #define IDD_DIALOG_ATTRIB               311
 #define IDD_DIALOG_NEW_PROJECT          313
 #define IDD_DIALOG_SHOWCASE             315
+#define IDD_DIALOG_DESIGN               319
+#define IDB_PNG_LOGO                    321
+#define IDB_BITMAP_LOGO                 323
+#define IDB_BITMAP_DESN                 324
 #define IDC_EDIT_ATT_HEAD               1000
 #define IDC_CHECK_ATT_INCULDE           1001
 #define IDC_EDIT_ATT_CONTENT            1002
@@ -79,7 +83,15 @@
 #define IDC_LIST_SCDATA                 1019
 #define IDC_EDIT1                       1020
 #define IDC_EDIT_SCMSG                  1020
+#define IDC_EDIT_DES_TO                 1020
 #define IDC_MFCLINK1                    1021
+#define IDC_EDIT_DES_TO2                1021
+#define IDC_EDIT_DES_SUB                1021
+#define IDC_BUTTON_PDF                  1022
+#define IDC_MFCLINK2                    1022
+#define IDC_BUTTON_DES_SEND             1023
+#define IDC_EDIT_DES_FROM               1024
+#define IDC_EDIT_DES_DESC               1025
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_BUTTON_FETCH                 32771
 #define ID_BUTTON_RENDER                32772
@@ -119,16 +131,16 @@
 #define ID_BUTTON_RESET_FONT            32810
 #define ID_BUTTON_HELP                  32811
 #define ID_BUTTON_UPDATE                32812
-#define ID_BUTTON2                      32813
 #define ID_BUTTON_IMPORT                32813
+#define ID_BUTTON_DESIGN                32814
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        319
-#define _APS_NEXT_COMMAND_VALUE         32814
-#define _APS_NEXT_CONTROL_VALUE         1022
+#define _APS_NEXT_RESOURCE_VALUE        325
+#define _APS_NEXT_COMMAND_VALUE         32815
+#define _APS_NEXT_CONTROL_VALUE         1026
 #define _APS_NEXT_SYMED_VALUE           310
 #endif
 #endif

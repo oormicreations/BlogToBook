@@ -843,7 +843,7 @@ void CBlogToBookView::OnButtonList()
 	Invalidate();
 	m_ArList.ShowWindow(SW_SHOW);
 
-	pDoc->ShowCaption(_T("Include/exclude articles from the list. Or Render the pages for a preview."));
+	if(!pDoc->m_IsNewProject) pDoc->ShowCaption(_T("Include/exclude articles from the list. Or Render the pages for a preview."));
 }
 
 
@@ -1015,11 +1015,14 @@ void CBlogToBookView::UpdateRenderFonts(int BFontSz, int TFontSz, CString BFont,
 	ribbonItem = DYNAMIC_DOWNCAST(CMFCRibbonEdit, pRibbon->FindByID(ID_COMBO_FONT_TITLE));
 	ribbonItem->SetEditText(m_TitleFont);
 
+	CString s;
+	s.Format(_T("%d"), m_TitleFontSize);
 	ribbonItem = DYNAMIC_DOWNCAST(CMFCRibbonEdit, pRibbon->FindByID(ID_SPIN_TITLE_SIZE));
-	ribbonItem->SetEditText(_T("18"));
+	ribbonItem->SetEditText(s);
 
+	s.Format(_T("%d"), m_BodyFontSize);
 	ribbonItem = DYNAMIC_DOWNCAST(CMFCRibbonEdit, pRibbon->FindByID(ID_SPIN_BODY_SIZE));
-	ribbonItem->SetEditText(_T("14"));
+	ribbonItem->SetEditText(s);
 
 
 	Invalidate();

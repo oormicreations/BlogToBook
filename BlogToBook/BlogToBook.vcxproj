@@ -190,6 +190,7 @@
     <ClInclude Include="BlogToBookDoc.h" />
     <ClInclude Include="BlogToBookView.h" />
     <ClInclude Include="CalendarBar.h" />
+    <ClInclude Include="DesignService.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="NewProjectDlg.h" />
     <ClInclude Include="Resource.h" />
@@ -205,6 +206,7 @@
     <ClCompile Include="BlogToBookDoc.cpp" />
     <ClCompile Include="BlogToBookView.cpp" />
     <ClCompile Include="CalendarBar.cpp" />
+    <ClCompile Include="DesignService.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="NewProjectDlg.cpp" />
     <ClCompile Include="ShowCase.cpp" />
@@ -219,15 +221,19 @@
     <ResourceCompile Include="BlogToBook.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="C:\Users\Sanjeev\Desktop\MaxShell 1.0.0\HelpImages\OormiLogo.png" />
+    <Image Include="res\bitmap1.bmp" />
     <Image Include="res\BlogToBook.ico" />
     <Image Include="res\BlogToBookDoc.ico" />
     <Image Include="res\buttons.bmp" />
+    <Image Include="res\coverdesign.bmp" />
     <Image Include="res\filelarge.bmp" />
     <Image Include="res\filesmall.bmp" />
     <Image Include="res\info.bmp" />
     <Image Include="res\main.bmp" />
     <Image Include="res\nav_large.bmp" />
     <Image Include="res\nav_large_hc.bmp" />
+    <Image Include="res\OormiLogo.bmp" />
     <Image Include="res\pages.bmp" />
     <Image Include="res\pages_hc.bmp" />
     <Image Include="res\pages_small.bmp" />

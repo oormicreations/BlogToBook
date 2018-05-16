@@ -57,6 +57,9 @@
     <ClInclude Include="ShowCase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DesignService.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BlogToBook.cpp">
@@ -90,6 +93,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ShowCase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DesignService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -148,6 +154,18 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\Toolbar256.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="C:\Users\Sanjeev\Desktop\MaxShell 1.0.0\HelpImages\OormiLogo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\OormiLogo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\coverdesign.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

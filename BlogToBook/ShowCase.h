@@ -14,7 +14,7 @@ public:
 	virtual ~CShowCase();
 
 // Dialog Data
-	CString /*m_PrintLink, m_Tags, m_Comments,*/ m_Result;
+	CString /*m_PrintLink, m_Tags, m_Comments,*/ m_Result, m_PDFFile, m_PDFName;
 	BOOL m_Agree, m_Success, m_Removed;
 	CString m_Data[20];
 	int m_DataCount;
@@ -40,4 +40,5 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedButtonScRem();
 	afx_msg LRESULT OnSCThreadNotify(WPARAM, LPARAM);
+	afx_msg void OnBnClickedButtonPdf();
 };

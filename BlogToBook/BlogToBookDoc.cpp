@@ -28,6 +28,7 @@
 #include "MainFrm.h"
 #include "AttribDlg.h"
 #include "ShowCase.h"
+#include "DesignService.h"
 
 
 #ifdef _DEBUG
@@ -117,7 +118,7 @@ UINT FetchProc(LPVOID param)
 		}
 
 		pDoc->SetAllArticles();
-		pDoc->SetModifiedFlag(TRUE);
+		//pDoc->SetModifiedFlag(TRUE);
 		//pDoc->m_Blog.SetBookInfo();//sendmess
 		::SendMessage(pp->tphWndView, FETCH_THREAD_NOTIFY, 0, 2);
 
@@ -169,6 +170,10 @@ BEGIN_MESSAGE_MAP(CBlogToBookDoc, CDocument)
 	ON_COMMAND(ID_FILE_OPEN, &CBlogToBookDoc::OnFileOpen)
 	ON_COMMAND(ID_FILE_SAVE, &CBlogToBookDoc::OnFileSave)
 	ON_COMMAND(ID_FILE_SAVE_AS, &CBlogToBookDoc::OnFileSaveAs)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_ADDR, &CBlogToBookDoc::OnUpdateEditAddr)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_FETCHFROM, &CBlogToBookDoc::OnUpdateEditFetchfrom)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_FETCHTO, &CBlogToBookDoc::OnUpdateEditFetchto)
+	ON_COMMAND(ID_BUTTON_DESIGN, &CBlogToBookDoc::OnButtonDesign)
 END_MESSAGE_MAP()
 
 
@@ -180,6 +185,9 @@ CBlogToBookDoc::CBlogToBookDoc()
 	// TODO: add one-time construction code here
 	m_B2BVersion = 1;
 	m_IsInstalled = FALSE;
+	m_Enable = FALSE;
+	m_IsNewProject = FALSE;
+
 	srand((UINT)time(0));
 
 	LoadSettings();
@@ -251,7 +259,7 @@ void CBlogToBookDoc::Clear()
 	m_ChapterCount = 0;
 	m_TitlesMonthCount = 0;
 
-	m_B2BRef = _T("<br /><br />This EBook was created using the Free and Open Sourced windows application: <a href=\"http://github.com/oormicreations/BlogToBook\">Blog to Book</a> by <a href=\"http://oormi.in\">Oormi Creations</a>.");
+	m_B2BRef = _T("<br /><br />This EBook was created using the Free and Open Sourced windows application: <a href=\"http://github.com/oormicreations/BlogToBook/releases\">Blog to Book</a> by <a href=\"http://oormi.in\">Oormi Creations</a>.");
 	m_B2BRefPre = _T("\r\n\r\nThis EBook was created using the Free and Open Sourced windows application: Blog to Book by Oormi Creations.");
 
 	for (int i = 0; i < MAXARTICLES; i++)
@@ -1493,6 +1501,7 @@ void CBlogToBookDoc::OnButtonShowcase()
 	scDlg.m_Data[15] = _T("EPUB");
 	scDlg.m_Data[16] = m_BookFile;
 	scDlg.m_Data[17] = m_ProjectPath;
+	scDlg.m_Data[18] = m_RawDataPath;
 
 	scDlg.m_DataCount = 16;//don't count bookfile and projectpath
 
@@ -1930,10 +1939,11 @@ void CBlogToBookDoc::OnButtonHelp()
 void CBlogToBookDoc::SetRenderFonts()
 {
 	CFrameWnd * fwnd = (CFrameWnd *)AfxGetMainWnd();
-	CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
-	if (view == NULL)return;
-	view->UpdateRenderFonts(m_BFontSz, m_TFontSz, m_BFont, m_TFont);
-
+	if (fwnd)
+	{
+		CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
+		if (view != NULL) view->UpdateRenderFonts(m_BFontSz, m_TFontSz, m_BFont, m_TFont);
+	}
 }
 
 void CBlogToBookDoc::OnButtonUpdate()
@@ -2421,7 +2431,9 @@ void CBlogToBookDoc::OnFileNew()
 {
 	if (GetB2BFileName(FALSE, TRUE))
 	{
+		m_IsNewProject = TRUE;
 		OnFileSave();
+		SetPathName(m_B2BFile);
 		ShowCaption(_T("New project created. Start by fetching your blog articles, import from backup file."));
 	}
 }
@@ -2459,6 +2471,10 @@ void CBlogToBookDoc::OnFileOpen()
 
 		ShowCaption(_T("Project loaded: ") + m_ProjectName);
 		SetTitle(m_ProjectName);
+		m_Enable = TRUE;
+		m_IsNewProject = FALSE;
+
+		SetPathName(m_B2BFile);
 
 		CFrameWnd * fwnd = (CFrameWnd *)AfxGetMainWnd();
 		if (fwnd)
@@ -2512,6 +2528,7 @@ void CBlogToBookDoc::OnFileSave()
 			if (!SaveIndex())return;
 		}
 		SetTitle(m_ProjectName);
+		m_Enable = TRUE;
 
 	}
 	else
@@ -2530,4 +2547,29 @@ void CBlogToBookDoc::OnFileSaveAs()
 	{
 		OnFileSave();
 	}
+}
+
+
+void CBlogToBookDoc::OnUpdateEditAddr(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable(m_Enable);
+}
+
+
+void CBlogToBookDoc::OnUpdateEditFetchfrom(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable(m_Enable);
+}
+
+
+void CBlogToBookDoc::OnUpdateEditFetchto(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable(m_Enable);
+}
+
+
+void CBlogToBookDoc::OnButtonDesign()
+{
+	CDesignService desDlg;
+	desDlg.DoModal();
 }
