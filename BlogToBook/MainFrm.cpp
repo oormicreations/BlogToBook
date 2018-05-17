@@ -86,12 +86,13 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// Navigation pane will be created at left, so temporary disable docking at the left side:
 	EnableDocking(CBRS_ALIGN_TOP | CBRS_ALIGN_BOTTOM | CBRS_ALIGN_RIGHT);
 
+	//b2b Removed....
 	// Create and setup "Outlook" navigation bar:
-	if (!CreateOutlookBar(m_wndNavigationBar, ID_VIEW_NAVIGATION, m_wndTree, m_wndCalendar, 250))
-	{
-		TRACE0("Failed to create navigation pane\n");
-		return -1;      // fail to create
-	}
+	//if (!CreateOutlookBar(m_wndNavigationBar, ID_VIEW_NAVIGATION, m_wndTree, m_wndCalendar, 250))
+	//{
+	//	TRACE0("Failed to create navigation pane\n");
+	//	return -1;      // fail to create
+	//}
 
 	// Create a caption bar:
 	if (!CreateCaptionBar())

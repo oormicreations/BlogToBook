@@ -38,18 +38,6 @@ END_MESSAGE_MAP()
 // CDesignService message handlers
 
 
-//string Utf8Encode(const wstring &wstr)
-//{
-//	string out;
-//	int len = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.length(), NULL, 0, NULL, NULL);
-//	if (len > 0)
-//	{
-//		out.resize(len);
-//		WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), wstr.length(), &out[0], len, NULL, NULL);
-//	}
-//	return out;
-//}
-
 BOOL CDesignService::SendReq(wstring fdata)
 {
 
@@ -85,13 +73,15 @@ BOOL CDesignService::SendReq(wstring fdata)
 			}
 			else break;
 		}
+
+		InternetCloseHandle(hReq);
+		InternetCloseHandle(hSession);
+		InternetCloseHandle(hInternet);
+		return TRUE;
 	}
 
+	return FALSE;
 
-	InternetCloseHandle(hReq);
-	InternetCloseHandle(hSession);
-	InternetCloseHandle(hInternet);
-	return TRUE;
 }
 
 void CDesignService::OnBnClickedButtonDesSend()
@@ -100,7 +90,7 @@ void CDesignService::OnBnClickedButtonDesSend()
 	GetDlgItemText(IDC_EDIT_DES_FROM, from);
 	GetDlgItemText(IDC_EDIT_DES_DESC, body);
 
-/*	if (from.IsEmpty() || body.IsEmpty() || (body == m_DesBody) || (from == _T("<Your email address>")))
+	if (from.IsEmpty() || body.IsEmpty() || (body == m_DesBody) || (from == _T("<Your email address>")))
 	{
 		AfxMessageBox(_T("Your Email address and requirements are needed!"));
 		return;
@@ -121,8 +111,7 @@ void CDesignService::OnBnClickedButtonDesSend()
 		AfxMessageBox(_T("Some issues were found with the data entered!\r\nEnsure its correct and concise."));
 		return;
 	}
-*/
-	from = _T("tarun.pradhaan@gmail.com");
+
 	CString fdata;
 	fdata = _T("from=") + from + _T("&body=") + body;
 
