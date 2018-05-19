@@ -61,7 +61,6 @@
 #define IDD_DIALOG_NEW_PROJECT          313
 #define IDD_DIALOG_SHOWCASE             315
 #define IDD_DIALOG_DESIGN               319
-#define IDB_PNG_LOGO                    321
 #define IDB_BITMAP_LOGO                 323
 #define IDB_BITMAP_DESN                 324
 #define IDC_EDIT_ATT_HEAD               1000
@@ -85,7 +84,6 @@
 #define IDC_EDIT_SCMSG                  1020
 #define IDC_EDIT_DES_TO                 1020
 #define IDC_MFCLINK1                    1021
-#define IDC_EDIT_DES_TO2                1021
 #define IDC_EDIT_DES_SUB                1021
 #define IDC_BUTTON_PDF                  1022
 #define IDC_MFCLINK2                    1022

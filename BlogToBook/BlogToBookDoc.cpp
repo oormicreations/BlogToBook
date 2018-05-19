@@ -906,13 +906,13 @@ BOOL CBlogToBookDoc::CreateEndPage()
 
 void CBlogToBookDoc::OnButtonFetch()
 {
+	if(!PrepareProject()) return;
+
 	if (!m_Blog.GetDateRange())
 	{
 		AfxMessageBox(_T("There is some problem with start and end dates. Ensure that the format is YYYYMM, year is after 1998 and end date is not before start date."));
 		return;
 	}
-
-	if(!PrepareProject()) return;
 
 	//clear wininet cache
 	//ClearChache();
@@ -2349,6 +2349,7 @@ CString CBlogToBookDoc::CleanPage(CString s)
 
 	//preview cleanup
 	m_BlogPagePreview.Replace(_T("&#8211;"), _T("-"));
+	m_BlogPagePreview.Replace(_T("&#8216;"), _T("'"));
 	m_BlogPagePreview.Replace(_T("&#8217;"), _T("'"));
 	m_BlogPagePreview.Replace(_T("&#8212;"), _T("--"));
 	m_BlogPagePreview.Replace(_T("&#8220;"), _T("\""));

@@ -647,7 +647,7 @@ BEGIN
     EDITTEXT        IDC_EDIT_DES_DESC,127,56,297,118,ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL
     EDITTEXT        IDC_EDIT_DES_FROM,307,7,118,14,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "Sure! Send me a quote.",IDC_BUTTON_DES_SEND,310,181,114,14
-    PUSHBUTTON      "No Thanks!",IDOK,7,181,114,14
+    PUSHBUTTON      "Close",IDOK,7,181,114,14
     EDITTEXT        IDC_EDIT_DES_TO,159,7,118,14,ES_AUTOHSCROLL | WS_DISABLED
     PUSHBUTTON      "Cancel",IDCANCEL,151,181,50,14,NOT WS_VISIBLE
     LTEXT           "To",IDC_STATIC,126,9,9,8
@@ -792,14 +792,6 @@ BEGIN
 "\076" 
     0
 END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// PNG
-//
-
-IDB_PNG_LOGO            PNG                     "C:\\Users\\Sanjeev\\Desktop\\MaxShell 1.0.0\\HelpImages\\OormiLogo.png"
 
 #endif    // English (India) resources
 /////////////////////////////////////////////////////////////////////////////

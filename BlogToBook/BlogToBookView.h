@@ -53,6 +53,9 @@ public:
 	BOOL CreateArList(CRect crect);
 	void UpdateChapterList();
 	void UpdateRenderFonts( int BFontSz, int TFontSz, CString BFont, CString TFont);
+	bool IsInstalled(LPCTSTR lpszFont);
+	//int EnumFontFamExProc(ENUMLOGFONTEX *, NEWTEXTMETRICEX *, int, LPARAM lParam);
+
 
 
 // Overrides

@@ -128,6 +128,7 @@ CBlogToBookView::CBlogToBookView()
 	m_TitleFontSize = 18;
 	m_BodyFont = _T("Garamond");
 	m_TitleFont = _T("Garamond");
+
 }
 
 CBlogToBookView::~CBlogToBookView()
@@ -475,7 +476,7 @@ void CBlogToBookView::OnDraw(CDC* pDC)
 
 
 		CFont renderFont;
-		renderFont.CreatePointFont((int)(m_BodyFontSize * 10 * m_PageScale), m_BodyFont);
+		BOOL fres = renderFont.CreatePointFont((int)(m_BodyFontSize * 10 * m_PageScale), m_BodyFont);
 		CFont * oldfont = pDC->SelectObject(&renderFont);
 
 		DRAWTEXTPARAMS dtParams;
@@ -1009,6 +1010,16 @@ void CBlogToBookView::UpdateRenderFonts(int BFontSz, int TFontSz, CString BFont,
 	m_BodyFont = BFont;
 	m_TitleFont = TFont;
 
+	if (!IsInstalled(m_BodyFont))
+	{
+		m_BodyFont = _T("Georgia");
+	}
+	if (!IsInstalled(m_TitleFont))
+	{
+		m_TitleFont = _T("Georgia");
+	}
+
+
 	CMFCRibbonEdit* ribbonItem = DYNAMIC_DOWNCAST(CMFCRibbonEdit, pRibbon->FindByID(ID_COMBO_FONT_BODY));
 	ribbonItem->SetEditText(m_BodyFont);
 
@@ -1026,4 +1037,30 @@ void CBlogToBookView::UpdateRenderFonts(int BFontSz, int TFontSz, CString BFont,
 
 
 	Invalidate();
+}
+
+static int CALLBACK EnumFontFamExProc(ENUMLOGFONTEX* /*lpelfe*/, NEWTEXTMETRICEX* /*lpntme*/, int /*FontType*/, LPARAM lParam)
+{
+	LPARAM* l = (LPARAM*)lParam;
+	*l = TRUE;
+	return TRUE;
+}
+
+bool CBlogToBookView::IsInstalled(LPCTSTR lpszFont)
+{
+	// Get the screen DC
+	CDC dc;
+	if (!dc.CreateCompatibleDC(NULL))
+	{
+		return false;
+	}
+	LOGFONT lf = { 0 };
+	// Any character set will do
+	lf.lfCharSet = DEFAULT_CHARSET;
+	// Set the facename to check for
+	_tcscpy(lf.lfFaceName, lpszFont);
+	LPARAM lParam = 0;
+	// Enumerate fonts
+	::EnumFontFamiliesEx(dc.GetSafeHdc(), &lf, (FONTENUMPROC)EnumFontFamExProc, (LPARAM)&lParam, 0);
+	return lParam ? true : false;
 }

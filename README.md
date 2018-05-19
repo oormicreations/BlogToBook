@@ -2,7 +2,15 @@
 
 				BlogToBook Project Overview
 
-Blog to Book converts a blog hosted on blogspot.com into an Ebook in EPUB format.
+Blog to Book converts a blog hosted on blogspot.com into an Ebook in EPUB format. Its a free and open sourced software.
+
+_Introduction and Tutorial_
+
+https://youtu.be/ccTxMO7SMCo
+
+_Download link_
+
+https://github.com/oormicreations/BlogToBook/releases
 
 _Features:_
 * Import articles from backup xml file.
