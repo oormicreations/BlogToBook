@@ -1713,6 +1713,9 @@ void CBlogToBookDoc::EditAttributes(int arNum)
 	if (arNum < MAXEXTRAPAGES) dialog.m_Caption = sn[arNum];
 	else dialog.m_Caption = sn[MAXEXTRAPAGES];
 
+	//fix newlines
+	dialog.m_AttContent.Replace(_T("\n"), _T("\r\n"));
+
 	if (IDCANCEL == dialog.DoModal()) return;
 
 	m_Blog.m_Articles[arNum].m_Title = dialog.m_AttribHeader;
@@ -1724,6 +1727,10 @@ void CBlogToBookDoc::EditAttributes(int arNum)
 
 	if (!SaveFile(m_Blog.m_Articles[arNum].m_PreviewFile, m_RawDataPath, dialog.m_AttContent))return;
 	if (!SaveIndex())return;
+
+	CString s = _T("<p class = \"chap\" >b2bchaptername</p><br />");
+	dialog.m_AttContent.Replace(_T("\r\n"), _T("<br />"));
+	if (!SaveFile(m_Blog.m_Articles[arNum].m_RawFile, m_RawDataPath, s + dialog.m_AttContent))return;
 
 	m_bListChanged = TRUE;
 	UpdateAllViews(NULL);
@@ -2544,9 +2551,52 @@ void CBlogToBookDoc::OnFileSave()
 
 void CBlogToBookDoc::OnFileSaveAs()
 {
+	CString oldraw = m_RawDataPath;
+
 	if (GetB2BFileName())
 	{
-		OnFileSave();
+		if (GetFileAttributes(m_ProjectPath) == INVALID_FILE_ATTRIBUTES)
+		{
+			if (SHCreateDirectoryEx(NULL, m_ProjectPath, NULL) != ERROR_SUCCESS)
+			{
+				AfxMessageBox(_T("Failed to create the project folder.\r\nEnsure you have rights or choose another location."));
+				return;
+			}
+		}
+
+
+		CFile file;
+		if (file.Open(m_B2BFile, CFile::modeCreate | CFile::modeWrite))
+		{
+			m_Blog.GetBlogInfo();
+			m_Blog.GetBookInfo();
+			m_Blog.GetDateRange();
+
+			CArchive ar(&file, CArchive::store);
+			Serialize(ar);
+			ar.Close();
+
+			//copy old data to new location
+			SetProjectPaths();
+			SHCopy(oldraw, m_RawDataPath);
+			//copy template
+			SHCopy(m_BlankPath + _T("*"), m_ProjectPath);
+			//update articles
+			SetAllArticles();
+			//save index
+			if (!m_Index.IsEmpty())
+			{
+				if (!SaveIndex())return;
+			}
+			SetTitle(m_ProjectName);
+			m_Enable = TRUE;
+
+		}
+		else
+		{
+			AfxMessageBox(_T("Project file save error!"));
+			return;
+		}
 	}
 }
 
