@@ -2588,6 +2588,20 @@ void CBlogToBookDoc::OnFileSaveAs()
 			{
 				if (!SaveIndex())return;
 			}
+			//save new cover path
+			m_Blog.m_CoverPath = m_RawDataPath + _T("book_cover.jpg");
+			CString s1, s2, str;
+			str.Format(_T("pre%03d.txt"), 0);
+			if (!SaveFile(str, m_RawDataPath, m_Blog.m_CoverPath))return;
+			s2 = str;
+
+			str.Format(_T("raw%03d.txt"), 0);
+			if (!SaveFile(str, m_RawDataPath, _T("<p class=\"chap\" >b2bchaptername</p><br />") + m_Blog.m_CoverPath))return;
+			s1 = str;
+
+			m_Blog.SetArticle(0, m_Blog.m_CoverPath, _T("None"), _T("Cover"), TRUE, s1, s2);
+
+
 			SetTitle(m_ProjectName);
 			m_Enable = TRUE;
 

@@ -417,7 +417,7 @@ UINT B2BDataProc(LPVOID param)
 
 	if (res)
 	{
-		CHAR szBuffer[32];
+		CHAR szBuffer[2048];
 		DWORD dwRead;
 		while (InternetReadFile(hReq, szBuffer, sizeof(szBuffer) - 1, &dwRead) == TRUE)
 		{
@@ -536,6 +536,22 @@ BOOL CShowCase::B64Encode(CString sfilename, CString id, int type)
 
 void CShowCase::OnBnClickedButtonScUpload()
 {
+	if (!PathFileExists(m_Data[16]))
+	{
+		//CFileDialog DataFileOpenDialog(true, _T("epub"), _T(""), OFN_FILEMUSTEXIST, _T("EPUB Files (*.epub)|*.epub|All Files (*.*)|*.*||"));
+		//DataFileOpenDialog.m_ofn.lpstrTitle = _T("Select an EPUB file ...");
+
+		//INT_PTR res = DataFileOpenDialog.DoModal();
+		//if (res == IDCANCEL) return;
+
+		//m_Data[16] = DataFileOpenDialog.GetPathName();
+		//SetDlgItemText(IDC_EDIT_SCMSG, DataFileOpenDialog.GetFileName());
+		AfxMessageBox(_T("The file ") + m_Data[16] + _T(" was not found.\r\nProbably it was renamed or deleted.\r\nThe Blog name must be same as EPUB file name, if you renamed it."));
+		return;
+
+
+	}
+
 	if (g_Success)
 	{
 		AfxMessageBox(_T("You have already uploaded the EBook and data successfully!\r\nVisit the site to view it."));
@@ -555,6 +571,22 @@ void CShowCase::OnBnClickedButtonScUpload()
 
 	m_Result = _T("No Connection");
 	g_Success = FALSE;
+
+	//cleanup to avoid sql errors
+	m_Data[2].Replace(_T("'"), _T(""));
+	m_Data[2].Replace(_T("\""), _T(""));
+	m_Data[3].Replace(_T("'"), _T(""));
+	m_Data[3].Replace(_T("\""), _T(""));
+	m_Data[5].Replace(_T("'"), _T(""));
+	m_Data[5].Replace(_T("\""), _T(""));
+	m_Data[6].Replace(_T("'"), _T(""));
+	m_Data[6].Replace(_T("\""), _T(""));
+	m_Data[12].Replace(_T("'"), _T(""));
+	m_Data[12].Replace(_T("\""), _T(""));
+	m_Data[13].Replace(_T("'"), _T(""));
+	m_Data[13].Replace(_T("\""), _T(""));
+	m_Data[14].Replace(_T("'"), _T(""));
+	m_Data[14].Replace(_T("\""), _T(""));
 
 	CString formData;// = _T("b2bver=1.0.0&b2bid=12345678");
 	CString params[] = {
@@ -702,7 +734,7 @@ void CShowCase::OnBnClickedButtonScRem()
 void CShowCase::OnBnClickedButtonPdf()
 {
 	CFileDialog DataFileOpenDialog(true, _T("pdf"), _T(""), OFN_FILEMUSTEXIST, _T("PDF Files (*.pdf)|*.pdf|All Files (*.*)|*.*||"));
-	DataFileOpenDialog.m_ofn.lpstrTitle = _T("Save a new project ...");
+	DataFileOpenDialog.m_ofn.lpstrTitle = _T("Select a PDF file ...");
 
 	INT_PTR res = DataFileOpenDialog.DoModal();
 	if (res == IDCANCEL) return;
