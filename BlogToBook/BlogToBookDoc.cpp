@@ -1462,6 +1462,7 @@ void CBlogToBookDoc::OnButtonShowcase()
 	}
 
 	UpdateB2BData();
+	m_BookFile = m_ProjectPath + m_Blog.m_BlogName + _T(".epub");
 
 	if (m_Blog.m_BlogName.IsEmpty()) { AfxMessageBox(_T("Blog Name is required! Ensure that its not empty.")); return; }
 	if (m_Blog.m_BlogAuthor.IsEmpty()) { AfxMessageBox(_T("Blog author is required! Ensure that its not empty.")); return; }
@@ -1637,8 +1638,8 @@ HRESULT CBlogToBookDoc::SaveCoverThumb()
 		double ratio = (double)300 / (double)h;
 		if (w > h) ratio = (double)228 / (double)w;
 
-		int iNewWidth = (int)(ratio*(double)w);
-		int iNewHeight = (int)(ratio*(double)h);
+		int iNewWidth = 2*(int)(ratio*(double)w);
+		int iNewHeight = 2*(int)(ratio*(double)h);
 
 		CFrameWnd * fwnd = (CFrameWnd *)AfxGetMainWnd();
 		CBlogToBookView * view = (CBlogToBookView*)fwnd->GetActiveView();
